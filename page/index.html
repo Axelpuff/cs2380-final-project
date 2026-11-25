@@ -1,0 +1,487 @@
+<title>Delimitation Stress Test</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wdth,wght@85,500;85,600;100,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a lab bench. Controls ride a sticky left rail; the division board, range chart, maps and trend charts scroll past on the right. */
+:root{
+  --bg:#f5f4f9; --surface:#ffffff; --sunk:#eceaf3; --ink:#1b1730; --ink-2:#544f6b; --ink-3:#827e95; --rule:#dedbe8; --rule-2:#c9c5d8;
+  --accent:#4a2fa0; --accent-soft:#ebe7f8; --on-accent:#ffffff;
+  --nda:#eb6834; --nda-2:#f4a888; --ind:#2a78d6; --oth:#a6a3b5; --gain:#17966a; --loss:#c94b7c; --mid:#e6e4ec;
+  --display:"Anek Latin","Arial Narrow",system-ui,sans-serif; --body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#13111b; --surface:#1c1927; --sunk:#252134; --ink:#efedf7; --ink-2:#bcb8cd; --ink-3:#8b879c; --rule:#322e43; --rule-2:#47425c;
+  --accent:#ac9af2; --accent-soft:#2b2545; --on-accent:#16122a;
+  --nda:#e06a3a; --nda-2:#8f4a2f; --ind:#4b93ea; --oth:#6d6980; --gain:#2bb586; --loss:#dd6b98; --mid:#35314a; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#13111b; --surface:#1c1927; --sunk:#252134; --ink:#efedf7; --ink-2:#bcb8cd; --ink-3:#8b879c; --rule:#322e43; --rule-2:#47425c;
+  --accent:#ac9af2; --accent-soft:#2b2545; --on-accent:#16122a;
+  --nda:#e06a3a; --nda-2:#8f4a2f; --ind:#4b93ea; --oth:#6d6980; --gain:#2bb586; --loss:#dd6b98; --mid:#35314a; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1220px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-stretch:85%;text-wrap:balance;margin:0;line-height:1.08}
+h1{font-size:clamp(34px,5.4vw,58px);font-weight:600;letter-spacing:-.01em}
+h2{font-size:26px;font-weight:600;margin-bottom:6px}
+h3{font-size:17px;font-weight:600;letter-spacing:.01em}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.dek{font-size:17px;color:var(--ink-2);max-width:64ch;margin-top:10px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+header{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
+.findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);margin:18px 0 30px}
+.findings div{padding:14px 18px 16px 0;margin-right:18px;font-size:14px;color:var(--ink-2)}
+.findings b{display:block;font-family:var(--display);font-stretch:85%;font-size:19px;line-height:1.15;color:var(--ink);font-weight:600;margin-bottom:5px}
+.lab{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;align-items:start}
+.rail{position:sticky;top:calc(12px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;max-height:calc(100vh - 24px);overflow:auto}
+.rail fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rail legend,.lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:0;margin-bottom:4px}
+.opt{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:4px 8px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;line-height:1.2}
+.opt small{display:block;color:var(--ink-3);font-size:11.5px;line-height:1.25;margin-top:1px}
+.opt:hover{background:var(--sunk)}
+.opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.opt[aria-pressed="true"] small{color:var(--ink-2)}
+.opt:focus-visible,button:focus-visible,input:focus-visible,.hit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;align-items:center;gap:10px}
+.row output{font-family:var(--mono);font-size:13px;min-width:46px;text-align:right}
+input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--rule-2);border-radius:7px;overflow:hidden}
+.seg button{flex:1;background:transparent;border:0;border-right:1px solid var(--rule-2);padding:6px 4px;font:inherit;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.hint{font-size:11.5px;color:var(--ink-3);line-height:1.35}
+.stack{display:flex;flex-direction:column;gap:26px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 20px;min-width:0}
+.panel>p.sub{color:var(--ink-2);font-size:13.5px;margin:2px 0 14px;max-width:78ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:16px}
+.tile{background:var(--surface);padding:11px 13px}
+.tile .k{font-size:12px;color:var(--ink-3)}
+.tile .v{font-family:var(--display);font-stretch:85%;font-size:30px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .d{font-size:12.5px;color:var(--ink-2)}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;border-radius:99px;padding:1px 8px;margin-left:6px;vertical-align:middle;border:1px solid var(--rule-2);color:var(--ink-2)}
+.pill.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink-2);margin:8px 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--body);font-size:11.5px;fill:var(--ink-2)}
+svg text.m{font-family:var(--mono);font-size:11px}
+svg text.s{fill:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:22px;align-items:start}
+.two.even{grid-template-columns:repeat(2,minmax(0,1fr))}
+.hit{cursor:pointer}
+#tip{position:fixed;pointer-events:none;z-index:20;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.4;padding:7px 10px;border-radius:6px;max-width:260px;opacity:0;transition:opacity .08s}
+#tip b{font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 22px;font-size:13px;color:var(--ink-2);margin-top:10px}
+.metrics b{color:var(--ink);font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+th{font-weight:500;color:var(--ink-3);font-size:12px}
+.scroll{overflow-x:auto}
+svg.wide{min-width:640px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px 40px;margin-top:14px}
+.notes ul{margin:8px 0 0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+.notes li{margin-bottom:7px}
+section{margin-top:44px}
+.loading{padding:60px 0;color:var(--ink-3);font-family:var(--mono)}
+@media (max-width:900px){ .lab{grid-template-columns:minmax(0,1fr)} .rail{position:static;max-height:none} .two,.two.even{grid-template-columns:minmax(0,1fr)} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Lok Sabha reapportionment · 2024 votes · GerryChain ensembles · run 25 Nov 2026</div>
+  <h1>Delimitation Stress Test</h1>
+  <p class="dek">Seven ways to hand out Lok Sabha seats, and five ways to draw the lines inside each state. Choose a formula and a map-drawer, then read how many members would sit on the government side of a division.</p>
+</header>
+
+<div class="findings" id="findings"><div class="loading">Loading simulation results…</div></div>
+
+<div class="lab" id="lab" hidden>
+  <aside class="rail" aria-label="Controls">
+    <fieldset><legend>Seat formula</legend><div id="schemes"></div></fieldset>
+    <div id="lamBox" hidden><div class="lbl">Weight on 1971–2021 growth (λ)</div><div class="row"><input type="range" id="lam" min="0" max="1" step="0.05" value="0.5"><output id="lamOut">0.50</output></div><div class="hint">0 keeps the 1971 freeze. 1 is plain population.</div></div>
+    <div><div class="lbl">House size</div><div class="row"><input type="range" id="H" min="543" max="850" step="1" value="816"><output id="HOut">816</output></div><div class="hint">543 today; the April bill capped it at 850.</div></div>
+    <div id="yearBox"><div class="lbl">Population counted as of</div><div class="seg" id="years"></div><div class="hint">2011 is the last census; 2026 and 2036 are official projections.</div></div>
+    <fieldset><legend>Who the new map favours</legend>
+      <div class="row"><input type="range" id="lv" min="0" max="4" step="1" value="2" aria-describedby="lvOut"></div>
+      <div id="lvOut" style="font-weight:600;font-size:14px"></div><div class="hint" id="lvHint"></div></fieldset>
+    <div><div class="lbl">Cross-over votes</div><div class="row"><input type="range" id="acc" min="0" max="15" step="0.2" value="0"><output id="accOut">0%</output></div>
+      <div class="seg" id="accPre" style="margin-top:6px"></div><div class="hint">Share of non-NDA members who vote with the government.</div></div>
+  </aside>
+
+  <div class="stack">
+    <div class="panel">
+      <h2 id="boardTitle">Division board</h2>
+      <p class="sub" id="boardSub"></p>
+      <div class="legend" id="boardLegend"></div>
+      <div class="scroll"><svg class="wide" id="board" viewBox="0 0 860 150" role="img" aria-label="Seat bar with majority and two-thirds marks"></svg></div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Every formula, every map-drawer</h2>
+      <p class="sub">Each row runs from the map most favourable to non-NDA parties to the one most favourable to the NDA. The hollow dot is a neutral map; the small dots are maps tilted inside the normal range. Shares include the cross-over votes set on the left. Select a row to switch formula.</p>
+      <div class="scroll"><svg class="wide" id="range" viewBox="0 0 860 318" role="img" aria-label="Government-side share of the House by formula and map"></svg></div>
+    </div>
+
+    <div class="two">
+      <div class="panel">
+        <h2>Who gains seats</h2>
+        <p class="sub">Change in each state's share of the House under the selected formula. Select a state to open its map.</p>
+        <div class="legend"><span><i style="background:var(--loss)"></i>Smaller share</span><span><i style="background:var(--mid)"></i>Same</span><span><i style="background:var(--gain)"></i>Larger share</span></div>
+        <svg id="india" viewBox="0 0 420 470" role="img" aria-label="Map of India by change in seat share"></svg>
+        <div class="tiles" id="regionTiles" style="grid-template-columns:repeat(2,minmax(0,1fr))"></div>
+      </div>
+      <div class="panel">
+        <h2 id="stTitle">State map</h2>
+        <p class="sub" id="stSub"></p>
+        <div class="legend"><span><i style="background:var(--nda)"></i>NDA seat</span><span><i style="background:var(--ind)"></i>INDIA-side seat</span><span><i style="background:var(--oth)"></i>Unaligned seat</span><span>Heavy lines are the simulated constituencies; fine lines are today's assembly segments.</span></div>
+        <svg id="stmap" viewBox="0 0 520 400" role="img" aria-label="Simulated constituency map"></svg>
+        <div class="metrics" id="stMetrics"></div>
+      </div>
+    </div>
+
+    <div class="two even">
+      <div class="panel">
+        <h3>Seats the NDA wins across neutral maps</h3>
+        <p class="sub" id="histSub"></p>
+        <svg id="hist" viewBox="0 0 420 220" role="img" aria-label="Histogram of NDA seats across the neutral ensemble"></svg>
+      </div>
+      <div class="panel">
+        <h3>Constituencies ranked by NDA margin</h3>
+        <p class="sub">Boxes show where each rank falls across neutral maps (5th to 95th percentile, quartiles shaded). Dots are the map selected on the left. A gerrymander shows up as dots pushed just above zero in the middle ranks.</p>
+        <svg id="box" viewBox="0 0 420 220" role="img" aria-label="Ordered NDA margins: ensemble boxes and selected plan"></svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>How long a drawn advantage lasts</h2>
+      <p class="sub">NDA seat share if every constituency's 2024 margin moved by the same amount. A map tuned to 2024 votes holds its edge near zero and gives it back as opinion moves, which is why the three curves meet at the extremes.</p>
+      <div class="legend"><span><i style="background:var(--ink-2)"></i>Neutral map</span><span><i style="background:var(--nda)"></i>NDA-optimised map</span><span><i style="background:var(--ind)"></i>Map optimised against the NDA</span></div>
+      <div class="scroll"><svg class="wide" id="sv" viewBox="0 0 860 260" role="img" aria-label="Seats-votes curves"></svg></div>
+    </div>
+  </div>
+</div>
+
+<section id="trends" hidden>
+  <h2>Where the trends push</h2>
+  <p class="dek" style="font-size:15px">Population keeps moving north through at least 2036. Economic weight sits in the south and west today; whether it stays there decides how long a revenue-weighted chamber protects them.</p>
+  <div class="two even" style="margin-top:16px">
+    <div class="panel">
+      <h3>Seat share if seats follow population</h3>
+      <p class="sub" id="popSub"></p>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Ten Hindi-belt states and Delhi</span><span><i style="background:var(--gain)"></i>Five southern states and Puducherry</span><span>Dashed: share held today</span></div>
+      <svg id="popch" viewBox="0 0 560 270" role="img" aria-label="Seat share by census year"></svg>
+    </div>
+    <div class="panel">
+      <h3>A revenue-weighted upper house over time</h3>
+      <p class="sub">Rajagopalan's Revenue Sabha gives a state seats in proportion to what it raises itself. State GDP stands in for own revenue here. Drag to set how fast poorer states close the income gap.</p>
+      <div class="row" style="margin-bottom:6px"><span class="lbl" style="margin:0">Catch-up rate</span><input type="range" id="beta" min="-1" max="4" step="0.25" value="0"><output id="betaOut">0%/yr</output></div>
+      <div class="legend"><span><i style="background:var(--gain)"></i>South</span><span><i style="background:var(--loss)"></i>South plus Maharashtra, Gujarat, Goa</span><span><i style="background:var(--accent)"></i>Hindi belt</span><span>Dashed: one-third and one-half of the chamber</span></div>
+      <svg id="revch" viewBox="0 0 560 270" role="img" aria-label="Revenue Sabha seat share over time"></svg>
+      <p class="hint" id="revNote" style="margin-top:8px"></p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:22px">
+    <h3>Seats by state under the selected formula</h3>
+    <div class="scroll"><table id="tbl"></table></div>
+  </div>
+</section>
+
+<section>
+  <h2>How this was built, and what it cannot tell you</h2>
+  <div class="notes">
+    <div><h3>Method</h3><ul>
+      <li><b>Seats.</b> Each formula is rounded with the Webster (Sainte-Laguë) method. States under six million people keep at least their current seats, following the Article 81 proviso.</li>
+      <li><b>Votes.</b> 2024 Lok Sabha results for all 543 seats, pooled into the alliances that actually shared seats in each state. Each constituency's vote is spread over its assembly segments; in eleven states the latest assembly election supplies each segment's lean relative to its constituency.</li>
+      <li><b>Neutral maps.</b> For twenty states, GerryChain's ReCom chain builds contiguous constituencies from whole assembly segments: four chains of 2,000 recorded plans for every seat count tested. <span id="planCount"></span></li>
+      <li><b>Drawn maps.</b> Short-burst optimisation searches for the plan with the most NDA seats, and separately the fewest. "Tilted" is the 5th or 95th percentile of the neutral ensemble: a map an outlier test would not flag.</li>
+      <li><b>Scoring.</b> Ordered-margin plots, efficiency gap and mean–median difference follow the ensemble-outlier approach of Duchin and the MGGG lab.</li>
+    </ul></div>
+    <div><h3>Limits</h3><ul>
+      <li>One election. Alliances have shifted since 2024, and voters respond to new boundaries and candidates.</li>
+      <li>A neutral redraw of today's 543 seats gives the NDA about eight more seats than the real map did in 2024. Some of that is chance in one election and some is smoothing where segment data is missing, so compare each formula with the "Freeze at 543" row, not with 293.</li>
+      <li>Building blocks are whole assembly segments, with constituencies allowed to differ by about 20% in size. A real commission redraws segments too and can cut finer, so the optimised figures are a floor on what is possible, not a ceiling.</li>
+      <li>Nine states have no segment-level lean in this data (Tamil Nadu, Madhya Pradesh, Rajasthan, Gujarat, Odisha, Andhra Pradesh, Telangana, Chhattisgarh, Himachal Pradesh). Where one side swept such a state, no map can change the result here, though one could in reality.</li>
+      <li>Assam, Jammu and Kashmir and sixteen small states and territories (39 seats) are not redrawn; they keep their 2024 split.</li>
+      <li>Reservation for Scheduled Castes, Scheduled Tribes and women is ignored. The reported Reddy and Tharoor formulas are sketches; the parameters here are one reading of each.</li>
+      <li>"Optimised" is the best plan a heuristic found. It is not evidence that anyone would draw it. A study of the 2008 delimitation found it largely politically neutral; the Assam and Jammu and Kashmir exercises of 2022–23 drew gerrymandering allegations that the authorities reject.</li>
+    </ul></div>
+    <div><h3>Sources</h3><ul id="src"></ul></div>
+  </div>
+</section>
+</div>
+<div id="tip" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+(async function(){
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const fmt=(x,d=0)=>Number(x).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(x,d=1)=>fmt(100*x,d)+'%';
+let D,TA,TS;
+try{ [D,TA,TS]=await Promise.all(['sim.json','topo_ac.json','topo_states.json'].map(u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u);return r.json()}))); }
+catch(e){ $('findings').innerHTML='<div class="loading">Could not load the simulation files ('+e.message+'). Reload the page to try again.</div>'; return; }
+
+/* ---------- data ---------- */
+const ST=D.ST.map(s=>({c:s[0],name:s[1],reg:s[2],cur:s[3],pop:{1971:s[4],2011:s[5],2021:s[6],2026:s[7],2031:s[8],2036:s[9]},gsdp:s[10]}));
+const BY=Object.fromEntries(ST.map(s=>[s.c,s])), CODES=ST.map(s=>s.c);
+const SOUTH=CODES.filter(c=>BY[c].reg==='S'), HINDI=['UP','BR','MP','RJ','JH','CG','HR','HP','UK','DL'], WEST=['MH','GJ','GA'];
+const SMALL=new Set(CODES.filter(c=>BY[c].pop[2011]<6000));
+const ACT={nda:293,bjp:240,ind:234,oth:16};
+const SCHEMES=[
+ {id:'pop',name:'Bill as drafted',d:'April 2026 text: seats by population'},
+ {id:'flat',name:'Flat scale-up',d:'Verbal assurance: 1971 shares kept'},
+ {id:'reddy',name:'Reddy 50/50',d:'New seats: half pro rata, half by GDP'},
+ {id:'tharoor',name:'Tharoor degressive',d:'Bigger states get more people per MP'},
+ {id:'revenue',name:'Rajagopalan',d:'By population, plus a Revenue Sabha'},
+ {id:'novel',name:'Fertility-window discount',d:'1971–2021 growth counts for less'},
+ {id:'status',name:'Freeze at 543',d:'Today’s allocation, lines redrawn'}];
+const LV=['Optimised against the NDA','Tilted against the NDA','Neutral','Tilted toward the NDA','Optimised for the NDA'];
+const LVH=['The fewest NDA seats a short-burst search could find.','5th percentile of neutral maps: unfavourable to the NDA but not an outlier.','The average over thousands of maps drawn with no partisan data.','95th percentile of neutral maps: favourable to the NDA but not an outlier.','The most NDA seats a short-burst search could find.'];
+const LVS=['a map optimised against the NDA','a map tilted against the NDA','a neutral map','a map tilted toward the NDA','a map optimised for the NDA'];
+const S={scheme:'pop',H:816,year:2011,lam:0.5,beta:0,lv:2,acc:0,sel:'UP'};
+
+/* ---------- apportionment ---------- */
+function webster(w,H,floor){const s={};let left=H;for(const c of CODES){s[c]=floor[c];left-=floor[c]}
+  for(;left>0;left--){let b=null,bv=-1;for(const c of CODES){const v=w[c]/(s[c]+0.5);if(v>bv){bv=v;b=c}}s[b]++}return s}
+const floors=()=>Object.fromEntries(CODES.map(c=>[c,SMALL.has(c)?BY[c].cur:1]));
+const curFloor=()=>Object.fromEntries(CODES.map(c=>[c,BY[c].cur]));
+function popAt(c,y){const ys=[2011,2021,2026,2031,2036],P=BY[c].pop;if(y>=2036)return P[2036]*Math.pow(P[2036]/P[2031],(y-2036)/5);
+  for(let i=0;i<4;i++){const a=ys[i],b=ys[i+1];if(y>=a&&y<=b)return P[a]*Math.pow(P[b]/P[a],(y-a)/(b-a))}return P[2011]}
+function gsdpShare(year,beta){const p23={};let G=0,Pp=0;for(const c of CODES){p23[c]=popAt(c,2023);if(BY[c].gsdp>0){G+=BY[c].gsdp;Pp+=p23[c]}}
+  const ynat=G/Pp,o={};let tot=0;for(const c of CODES){if(BY[c].gsdp<=0){o[c]=0;continue}const ly=Math.log(BY[c].gsdp/p23[c]/ynat)*Math.exp(-beta*Math.max(0,year-2023));o[c]=popAt(c,year)*ynat*Math.exp(ly);tot+=o[c]}
+  for(const c of CODES)o[c]/=tot;return o}
+function seatsFor(id,H,year,lam){
+  const P=c=>BY[c].pop[year];
+  if(id==='status')return Object.fromEntries(CODES.map(c=>[c,BY[c].cur]));
+  if(id==='pop'||id==='revenue')return webster(Object.fromEntries(CODES.map(c=>[c,P(c)])),H,floors());
+  if(id==='flat')return webster(Object.fromEntries(CODES.map(c=>[c,BY[c].cur])),H,curFloor());
+  if(id==='reddy'){const g=gsdpShare(2023,0),add=H-543;return webster(Object.fromEntries(CODES.map(c=>[c,BY[c].cur+add*(0.5*BY[c].cur/543+0.5*g[c])])),H,curFloor())}
+  if(id==='tharoor')return webster(Object.fromEntries(CODES.map(c=>[c,Math.pow(P(c),0.517)])),H,floors());
+  if(id==='novel'){const end=Math.min(year,2021);return webster(Object.fromEntries(CODES.map(c=>[c,BY[c].pop[1971]+lam*Math.max(0,BY[c].pop[end]-BY[c].pop[1971])+(P(c)-BY[c].pop[end])])),H,floors())}
+}
+const effH=id=>id==='status'?543:S.H;
+
+/* ---------- partisan model ---------- */
+function bracket(c,k){const ks=D.sim[c].ks;if(k<=ks[0])return[ks[0],ks[0],0];if(k>=ks[ks.length-1])return[ks[ks.length-1],ks[ks.length-1],0];
+  for(let i=0;i<ks.length-1;i++)if(k>=ks[i]&&k<=ks[i+1])return[ks[i],ks[i+1],(k-ks[i])/(ks[i+1]-ks[i])]}
+function nearestK(c,k){const ks=D.sim[c].ks;return ks.reduce((a,b)=>Math.abs(b-k)<Math.abs(a-k)?b:a)}
+function frac(c,k,L){const s=D.sim[c];if(!s){const f=D.fixed[c];return[f.nda/f.k,f.ind/f.k,f.oth/f.k,f.bjp/f.k]}
+  const [a,b,t]=bracket(c,k),fa=s.runs[a].lv[L].map(x=>x/a),fb=s.runs[b].lv[L].map(x=>x/b);return fa.map((x,i)=>x+(fb[i]-x)*t)}
+function house(seats,L){const o={nda:0,ind:0,oth:0,bjp:0,H:0,st:{}};
+  for(const c of CODES){const k=seats[c],f=frac(c,k,L);o.st[c]={k,nda:k*f[0],ind:k*f[1],oth:k*f[2],bjp:k*f[3]};o.nda+=k*f[0];o.ind+=k*f[1];o.oth+=k*f[2];o.bjp+=k*f[3];o.H+=k}
+  const tot=o.nda+o.ind+o.oth;o.nda*=o.H/tot;o.ind*=o.H/tot;o.oth*=o.H/tot;return o}
+const gov=(h,acc)=>h.nda+acc/100*(h.H-h.nda);
+const cache=new Map();
+function calc(id,L){const key=[id,effH(id),S.year,S.lam,L].join('|');if(!cache.has(key)){const seats=seatsFor(id,effH(id),S.year,S.lam);cache.set(key,{seats,h:house(seats,L)})}return cache.get(key)}
+
+/* ---------- tooltip ---------- */
+const tip=$('tip');
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;const x=Math.min(window.innerWidth-270,e.clientX+14),y=e.clientY+16;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.min(window.innerHeight-90,y)+'px'}
+const hideTip=()=>tip.style.opacity=0;
+function bindTip(node,fn){node.addEventListener('pointermove',e=>showTip(e,fn()));node.addEventListener('pointerleave',hideTip)}
+
+/* ---------- geometry ---------- */
+function fit(bbox,W,Hh,pad){const [x0,y0,x1,y1]=bbox,s=Math.min((W-2*pad)/(x1-x0),(Hh-2*pad)/(y1-y0));const ox=(W-s*(x1-x0))/2-s*x0,oy=(Hh-s*(y1-y0))/2-s*y0;return p=>[(p[0]*s+ox).toFixed(1),(p[1]*s+oy).toFixed(1)]}
+const ring=(r,f)=>'M'+r.map(p=>f(p).join(',')).join('L');
+function pathOf(g,f){if(!g)return'';if(g.type==='Polygon')return g.coordinates.map(r=>ring(r,f)+'Z').join('');if(g.type==='MultiPolygon')return g.coordinates.map(p=>p.map(r=>ring(r,f)+'Z').join('')).join('');
+  if(g.type==='MultiLineString')return g.coordinates.map(r=>ring(r,f)).join('');if(g.type==='LineString')return ring(g.coordinates,f);if(g.type==='GeometryCollection')return g.geometries.map(x=>pathOf(x,f)).join('');return''}
+const objOf=t=>t.objects[Object.keys(t.objects)[0]];
+
+/* ---------- controls ---------- */
+const sb=$('schemes');SCHEMES.forEach(s=>{const b=document.createElement('button');b.className='opt';b.type='button';b.id='sc-'+s.id;b.innerHTML=s.name+'<small>'+s.d+'</small>';b.onclick=()=>{S.scheme=s.id;render()};sb.appendChild(b)});
+[2011,2026,2036].forEach(y=>{const b=document.createElement('button');b.type='button';b.textContent=y;b.id='yr-'+y;b.onclick=()=>{S.year=y;render()};$('years').appendChild(b)});
+[['As elected',0],['April 2026 vote',2],['Reported now',10.8]].forEach(([t,v])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.dataset.v=v;b.onclick=()=>{S.acc=v;$('acc').value=v;render()};$('accPre').appendChild(b)});
+$('H').oninput=e=>{S.H=+e.target.value;render()};$('lam').oninput=e=>{S.lam=+e.target.value;render()};
+$('lv').oninput=e=>{S.lv=+e.target.value;render()};$('acc').oninput=e=>{S.acc=+e.target.value;render()};$('beta').oninput=e=>{S.beta=+e.target.value/100;renderTrends()};
+
+/* ---------- board ---------- */
+function renderBoard(){
+  const {seats,h}=calc(S.scheme,S.lv),H=h.H,svg=$('board');svg.innerHTML='';
+  const X0=10,W=840,y=46,bh=34,x=v=>X0+W*v/H;
+  const al=h.nda-h.bjp,segs=[[h.bjp,'var(--nda)','BJP'],[al,'var(--nda-2)','NDA allies'],[h.oth,'var(--oth)','Unaligned'],[h.ind,'var(--ind)','INDIA-side parties']];
+  let cx=0;segs.forEach(([v,col,nm])=>{const r=el('rect',{x:x(cx)+1,y,width:Math.max(0,W*v/H-2),height:bh,fill:col,rx:2},svg);bindTip(r,()=>'<b>'+nm+'</b><br>'+fmt(v)+' seats · '+pct(v/H));
+    cx+=v});
+  $('boardLegend').innerHTML=segs.map(([v,col,nm])=>'<span><i style="background:'+col+'"></i>'+nm+' '+fmt(v)+'</span>').join('');
+  const g=gov(h,S.acc);
+  el('path',{d:`M${x(0)},${y+bh+9}H${x(g)}M${x(0)},${y+bh+4}v10M${x(g)},${y+bh+4}v10`,stroke:'var(--ink)','stroke-width':1.5,fill:'none'},svg);
+  el('text',{x:x(0),y:y+bh+28,class:'s'},svg).textContent='Government side on a division: '+fmt(g)+' of '+H+' ('+pct(g/H)+')';
+  [[Math.floor(H/2)+1,'Majority '+(Math.floor(H/2)+1)],[Math.ceil(2*H/3),'Two-thirds '+Math.ceil(2*H/3)]].forEach(([v,t])=>{el('line',{x1:x(v),x2:x(v),y1:y-14,y2:y+bh+2,stroke:'var(--ink)','stroke-width':1.2,'stroke-dasharray':'3 3'},svg);
+    el('text',{x:x(v),y:y-19,'text-anchor':'middle',class:'m s'},svg).textContent=t});
+  const ry=y+bh+52;el('line',{x1:X0,x2:X0+W,y1:ry,y2:ry,stroke:'var(--rule-2)'},svg);
+  el('text',{x:X0,y:ry+16,class:'m'},svg).textContent='Recent divisions, ayes as share of votes cast:';
+  [[288/520,'Waqf Bill, Apr 2025: 288–232'],[269/467,'One Nation One Election, Dec 2024: 269–198'],[298/528,'131st Amendment, Apr 2026: 298–230'],[320/540,'NDA strength reported Nov 2026: 320 of 540']].forEach(([v,t])=>{
+    const c=el('circle',{cx:X0+W*v,cy:ry,r:5,fill:'var(--surface)',stroke:'var(--accent)','stroke-width':2,class:'hit'},svg);bindTip(c,()=>'<b>'+t+'</b><br>'+pct(v)+' on the government side')});
+  const sc=SCHEMES.find(s=>s.id===S.scheme);
+  $('boardTitle').textContent='Division board: '+sc.name+', '+H+' seats';
+  $('boardSub').textContent='With '+LVS[S.lv]+(S.acc>0?', plus '+fmt(S.acc,1)+'% of other members crossing over':'')+'. 2024 votes recounted in the new constituencies. Actual 2024 result on today’s map: NDA 293 of 543.'+(S.scheme==='revenue'?' Rajagopalan pairs this Lok Sabha with a revenue-weighted upper house that must pass money bills; see the trends below.':'');
+  const maj=Math.floor(H/2)+1,tt=Math.ceil(2*H/3),d=(a,b)=>(a>=b?'+':'−')+fmt(Math.abs(100*(a-b)),1)+' pts vs today';
+  const so=SOUTH.reduce((a,c)=>a+seats[c],0),hi=HINDI.reduce((a,c)=>a+seats[c],0);
+  const tile=(k,v,dd,on)=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${dd}</div></div>`;
+  $('tiles').innerHTML=tile('NDA seats',fmt(h.nda),pct(h.nda/H)+' of the House · '+d(h.nda/H,ACT.nda/543))
+   +tile('BJP alone',fmt(h.bjp),(h.bjp>=maj?'<span class="pill on">Majority alone</span>':fmt(maj-h.bjp)+' short of a majority'))
+   +tile('To two-thirds',(g>=tt?'+':'−')+fmt(Math.abs(g-tt)),g>=tt?'<span class="pill on">Can amend the Constitution alone</span>':'Government side is short of '+tt)
+   +tile('Seats from the south',pct(so/H),fmt(so)+' seats · 23.9% today');
+  $('regionTiles').innerHTML=tile('Hindi belt and Delhi',pct(hi/H),fmt(hi)+' seats · 41.4% today')+tile('South',pct(so/H),fmt(so)+' seats · 23.9% today');
+}
+
+/* ---------- range chart ---------- */
+function renderRange(){
+  const svg=$('range');svg.innerHTML='';const X0=200,W=500,lo=.3,hi=.8,x=v=>X0+W*(Math.min(hi,Math.max(lo,v))-lo)/(hi-lo),rh=36,top=34;
+  [.3,.4,.5,.6,.7,.8].forEach(v=>{el('line',{x1:x(v),x2:x(v),y1:top-6,y2:top+rh*7,stroke:'var(--rule)'},svg);el('text',{x:x(v),y:top+rh*7+16,'text-anchor':'middle',class:'m'},svg).textContent=Math.round(v*100)+'%'});
+  [[.5,'Majority'],[2/3,'Two-thirds']].forEach(([v,t])=>{el('line',{x1:x(v),x2:x(v),y1:top-10,y2:top+rh*7,stroke:'var(--ink)','stroke-dasharray':'3 3','stroke-width':1.2},svg);el('text',{x:x(v),y:top-15,'text-anchor':'middle',class:'m s'},svg).textContent=t});
+  SCHEMES.forEach((s,i)=>{const y=top+rh*i+rh/2,vals=[0,1,2,3,4].map(L=>{const h=calc(s.id,L).h;return gov(h,S.acc)/h.H}),on=s.id===S.scheme;
+    const g=el('g',{class:'hit',tabindex:0,role:'button','aria-label':s.name},svg);g.onclick=()=>{S.scheme=s.id;render()};g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();S.scheme=s.id;render()}};
+    el('rect',{x:0,y:y-rh/2+2,width:860,height:rh-4,rx:6,fill:on?'var(--accent-soft)':'transparent'},g);
+    el('text',{x:10,y:y+4,class:'s',style:'font-size:13px;font-weight:'+(on?600:400)},g).textContent=s.name;
+    el('rect',{x:x(vals[0]),y:y-4,width:Math.max(2,x(vals[4])-x(vals[0])),height:8,rx:4,fill:'var(--rule-2)'},g);
+    el('rect',{x:x(vals[2]),y:y-4,width:Math.max(0,x(vals[4])-x(vals[2])),height:8,rx:4,fill:'var(--nda)',opacity:.55},g);
+    el('rect',{x:x(vals[0]),y:y-4,width:Math.max(0,x(vals[2])-x(vals[0])),height:8,rx:4,fill:'var(--ind)',opacity:.55},g);
+    [1,3].forEach(L=>el('circle',{cx:x(vals[L]),cy:y,r:3,fill:'var(--ink-2)'},g));
+    el('circle',{cx:x(vals[2]),cy:y,r:5.5,fill:'var(--surface)',stroke:'var(--ink)','stroke-width':2},g);
+    if(on)el('circle',{cx:x(vals[S.lv]),cy:y,r:8.5,fill:'none',stroke:'var(--accent)','stroke-width':2},g);
+    el('text',{x:X0+W+12,y:y+4,class:'m'},g).textContent=pct(vals[2])+' → '+pct(vals[4]);
+    bindTip(g,()=>'<b>'+s.name+'</b><br>'+LV.map((n,L)=>n+': '+pct(vals[L])).join('<br>'))});
+  el('text',{x:X0+W+12,y:top-15,class:'m'},svg).textContent='neutral → best for NDA';
+}
+
+/* ---------- India map ---------- */
+const stFeat=topojson.feature(TS,objOf(TS)).features,stFit=fit(TS.bbox,420,470,6);
+const stPath=stFeat.map(f=>pathOf(f.geometry,stFit));
+function divColor(v,max){const t=Math.max(-1,Math.min(1,v/max)),a=Math.round(Math.abs(t)*100);return `color-mix(in srgb, ${t>=0?'var(--gain)':'var(--loss)'} ${a}%, var(--mid))`}
+function renderIndia(){
+  const svg=$('india');svg.innerHTML='';const {seats,h}=calc(S.scheme,S.lv),H=h.H;
+  stFeat.forEach((f,i)=>{const c=f.properties.c,dv=100*(seats[c]/H-BY[c].cur/543),sim=!!D.sim[c];
+    const p=el('path',{d:stPath[i],fill:divColor(dv,2.5),stroke:c===S.sel?'var(--ink)':'var(--surface)','stroke-width':c===S.sel?2:.7,'stroke-linejoin':'round',class:sim?'hit':''},svg);
+    if(sim){p.setAttribute('tabindex',0);p.setAttribute('role','button');p.setAttribute('aria-label',BY[c].name);p.onclick=()=>{S.sel=c;render()};p.onkeydown=e=>{if(e.key==='Enter'){S.sel=c;render()}}}
+    bindTip(p,()=>{const s=h.st[c];return '<b>'+BY[c].name+(c==='JK'?' (Ladakh drawn with it)':'')+'</b><br>'+BY[c].cur+' → '+seats[c]+' seats<br>Share of House '+(dv>=0?'+':'−')+fmt(Math.abs(dv),2)+' pts<br>NDA '+fmt(s.nda,1)+' · INDIA-side '+fmt(s.ind,1)+' · other '+fmt(s.oth,1)+(sim?'':'<br><i>Not redrawn: 2024 split kept</i>')})});
+  svg.appendChild(svg.querySelector('path[stroke="var(--ink)"]')||el('g'));
+}
+
+/* ---------- state panel ---------- */
+const acCache={};
+function acGeo(c){if(!acCache[c]){const t=TA[c],o=objOf(t),f=fit(t.bbox,520,400,8);acCache[c]={t,o,f,paths:topojson.feature(t,o).features.map(x=>pathOf(x.geometry,f)),props:o.geometries.map(g=>g.properties)}}return acCache[c]}
+const SIDE=['var(--nda)','var(--ind)','var(--oth)'],SIDEN=['NDA','INDIA-side','Unaligned'];
+function renderState(){
+  const c=S.sel,sim=D.sim[c],{seats,h}=calc(S.scheme,S.lv),k=seats[c],kn=nearestK(c,k),run=sim.runs[kn],plan=run.pl[S.lv],g=acGeo(c),svg=$('stmap');svg.innerHTML='';
+  g.paths.forEach((d,i)=>{const di=plan.a[i],p=el('path',{d,fill:SIDE[plan.w[di]],stroke:'var(--surface)','stroke-width':.3,'stroke-opacity':.4},svg);
+    bindTip(p,()=>'<b>'+g.props[i].n+'</b> assembly segment<br>Today in '+g.props[i].p+'<br>Simulated seat won by '+SIDEN[plan.w[di]]+'<br>NDA margin there '+(plan.m[di]>=0?'+':'−')+fmt(Math.abs(100*plan.m[di]),1)+' pts')});
+  el('path',{d:pathOf(topojson.mesh(g.t,g.o,(a,b)=>a!==b&&plan.a[a.properties.i]!==plan.a[b.properties.i]),g.f),fill:'none',stroke:'var(--surface)','stroke-width':2.2,'stroke-linejoin':'round','pointer-events':'none'},svg);
+  el('path',{d:pathOf(topojson.mesh(g.t,g.o,(a,b)=>a===b),g.f),fill:'none',stroke:'var(--ink)','stroke-width':.8,'pointer-events':'none'},svg);
+  const s=h.st[c];
+  $('stTitle').textContent=BY[c].name+': '+k+' seats'+(k!==BY[c].cur?' ('+BY[c].cur+' today)':'');
+  $('stSub').innerHTML='With '+LVS[S.lv]+': NDA '+fmt(s.nda,1)+', INDIA-side '+fmt(s.ind,1)+', unaligned '+fmt(s.oth,1)+'. The plan drawn is one from the simulation at '+kn+' seats'+(kn!==k?', the nearest count tested':'')+'. 2024 vote: NDA '+pct(sim.vs.nda)+', INDIA-side '+pct(sim.vs.ind)+'.'+(sim.lean?'':' No segment-level lean for this state, so each segment carries its constituency’s 2024 split.');
+  const egT=v=>(v>=0?'+':'−')+fmt(Math.abs(100*v),1)+'%';
+  let m='<div><b>Efficiency gap</b> (positive favours the NDA)<br>Neutral maps: '+egT(run.eg[1])+' (90% range '+egT(run.eg[0])+' to '+egT(run.eg[2])+')<br>Optimised for the NDA: '+egT(run.eg[3])+'<br>Optimised against: '+egT(run.eg[4])+'</div>';
+  m+='<div><b>Mean–median difference</b><br>Neutral maps: '+egT(run.mm[1])+' (90% range '+egT(run.mm[0])+' to '+egT(run.mm[2])+')<br>Optimised for the NDA: '+egT(run.mm[3])+'<br>Optimised against: '+egT(run.mm[4])+'</div>';
+  const cr=sim.runs[sim.cur];
+  if(cr&&cr.ap)m+='<div><b>Today’s map, drawn in 2008</b><br>NDA won '+sim.act.lv[0]+' of '+sim.cur+' in 2024. Neutral maps average '+fmt(cr.lv[2][0],1)+'. The real map sits at the '+fmt(100*cr.ap.nda)+'th percentile of the ensemble.</div>';
+  $('stMetrics').innerHTML=m;
+  /* histogram */
+  const hs=$('hist');hs.innerHTML='';const keys=Object.keys(run.hist).map(Number).sort((a,b)=>a-b),mn=Math.min(keys[0],run.lv[0][0]),mx=Math.max(keys[keys.length-1],run.lv[4][0]);
+  const X0=30,W=370,Y0=170,Hh=130,bw=W/(mx-mn+1),top=Math.max(...Object.values(run.hist)),xx=v=>X0+(v-mn+.5)*bw;
+  el('line',{x1:X0,x2:X0+W,y1:Y0,y2:Y0,stroke:'var(--rule-2)'},hs);
+  keys.forEach(v=>{const hh=Hh*run.hist[v]/top,r=el('rect',{x:xx(v)-Math.min(24,bw-2)/2,y:Y0-hh,width:Math.min(24,bw-2),height:hh,fill:'var(--ink-3)',rx:2},hs);bindTip(r,()=>'<b>'+v+' NDA seats</b><br>'+pct(run.hist[v]/run.N)+' of neutral maps')});
+  const step=Math.max(1,Math.ceil((mx-mn+1)/12));for(let v=mn;v<=mx;v++)if((v-mn)%step===0)el('text',{x:xx(v),y:Y0+15,'text-anchor':'middle',class:'m'},hs).textContent=v;
+  el('text',{x:X0+W/2,y:Y0+34,'text-anchor':'middle'},hs).textContent='NDA seats out of '+kn;
+  const mark=(v,col,t,row)=>{el('line',{x1:xx(v),x2:xx(v),y1:Y0,y2:16+row*13,stroke:col,'stroke-width':1.6},hs);el('text',{x:xx(v)+(v>(mn+mx)/2?-5:5),y:22+row*13,'text-anchor':v>(mn+mx)/2?'end':'start',class:'s',style:'font-size:11px'},hs).textContent=t};
+  mark(run.lv[4][0],'var(--nda)','Optimised for NDA: '+run.lv[4][0],0);mark(run.lv[0][0],'var(--ind)','Optimised against: '+run.lv[0][0],1);
+  if(kn===sim.cur)mark(sim.act.lv[0],'var(--accent)','Actual 2008 map: '+sim.act.lv[0],2);
+  $('histSub').textContent=BY[c].name+' at '+kn+' seats, '+fmt(run.N)+' plans. Lines mark what the optimiser reached in each direction'+(kn===sim.cur?' and where the real map falls':'')+'.';
+  /* ordered margins */
+  const bx=$('box');bx.innerHTML='';const q=run.q,n=q.length,om=plan.m.slice().sort((a,b)=>a-b),all=q.flat().concat(om),lo=Math.min(-.3,Math.min(...all)),hi2=Math.max(.3,Math.max(...all));
+  const BX=38,BW=372,BY0=14,BH=176,yy=v=>BY0+BH*(hi2-v)/(hi2-lo),bxw=BW/n,xb=j=>BX+(j+.5)*bxw;
+  [-.4,-.2,0,.2,.4].filter(v=>v>lo&&v<hi2).forEach(v=>{el('line',{x1:BX,x2:BX+BW,y1:yy(v),y2:yy(v),stroke:v===0?'var(--ink)':'var(--rule)','stroke-width':v===0?1:1},bx);el('text',{x:BX-6,y:yy(v)+4,'text-anchor':'end',class:'m'},bx).textContent=(v>0?'+':v<0?'−':'')+Math.abs(v*100)});
+  q.forEach((r,j)=>{el('line',{x1:xb(j),x2:xb(j),y1:yy(r[0]),y2:yy(r[4]),stroke:'var(--ink-3)','stroke-width':Math.max(.6,Math.min(1.2,bxw*.2))},bx);
+    el('rect',{x:xb(j)-Math.max(.8,bxw*.32),y:yy(r[3]),width:Math.max(1.6,bxw*.64),height:Math.max(1,yy(r[1])-yy(r[3])),fill:'var(--rule-2)'},bx)});
+  om.forEach((v,j)=>{const d=el('circle',{cx:xb(j),cy:yy(v),r:Math.max(1.6,Math.min(3.2,bxw*.38)),fill:v>0?'var(--nda)':'var(--ind)',stroke:'var(--surface)','stroke-width':.6},bx);bindTip(d,()=>'Rank '+(j+1)+' of '+n+'<br>NDA margin '+(v>=0?'+':'−')+fmt(Math.abs(100*v),1)+' pts<br>Neutral median '+(r=>(r>=0?'+':'−')+fmt(Math.abs(100*r),1))(q[j][2])+' pts')});
+  el('text',{x:BX+BW/2,y:BY0+BH+22,'text-anchor':'middle'},bx).textContent='Constituencies, weakest for the NDA to strongest · margin in points';
+}
+
+/* ---------- seats-votes ---------- */
+function renderSV(){
+  const svg=$('sv');svg.innerHTML='';const {seats}=calc(S.scheme,2),H=effH(S.scheme);
+  const sw=[];for(let s=-12;s<=12.01;s+=.5)sw.push(s/100);
+  const curve=which=>sw.map(s=>{let t=0;for(const c of CODES){const k=seats[c];if(!D.sim[c]){t+=k*D.fixed[c].nda/D.fixed[c].k;continue}const kn=nearestK(c,k),r=D.sim[c].runs[kn];
+    const ms=which===2?r.q.map(x=>x[2]):r.pl[which].m;t+=k*ms.filter(m=>m+s>0).length/kn}return t/H});
+  const X0=46,W=780,Y0=16,Hh=200,x=s=>X0+W*(s+.12)/.24,y=v=>Y0+Hh*(1-(v-.3)/.5);
+  [.3,.4,.5,.6,.7,.8].forEach(v=>{el('line',{x1:X0,x2:X0+W,y1:y(v),y2:y(v),stroke:'var(--rule)'},svg);el('text',{x:X0-8,y:y(v)+4,'text-anchor':'end',class:'m'},svg).textContent=Math.round(v*100)+'%'});
+  [[.5,'Majority'],[2/3,'Two-thirds']].forEach(([v,t])=>{el('line',{x1:X0,x2:X0+W,y1:y(v),y2:y(v),stroke:'var(--ink)','stroke-dasharray':'3 3'},svg);el('text',{x:X0+4,y:y(v)-5,class:'m s'},svg).textContent=t});
+  [-10,-5,0,5,10].forEach(s=>{el('text',{x:x(s/100),y:Y0+Hh+16,'text-anchor':'middle',class:'m'},svg).textContent=(s>0?'+':s<0?'−':'')+Math.abs(s)});
+  el('line',{x1:x(0),x2:x(0),y1:Y0,y2:Y0+Hh,stroke:'var(--rule-2)'},svg);
+  el('text',{x:X0+W/2,y:Y0+Hh+36,'text-anchor':'middle'},svg).textContent='Uniform shift in NDA margin since 2024, points';
+  const cs=[[2,'var(--ink-2)'],[4,'var(--nda)'],[0,'var(--ind)']].map(([w,col])=>{const v=curve(w);el('path',{d:'M'+v.map((p,i)=>x(sw[i]).toFixed(1)+','+y(p).toFixed(1)).join('L'),fill:'none',stroke:col,'stroke-width':2,'stroke-linejoin':'round'},svg);return v});
+  const i0=sw.findIndex(s=>Math.abs(s)<1e-9);[[0,'var(--ink-2)'],[1,'var(--nda)'],[2,'var(--ind)']].forEach(([j,col])=>el('circle',{cx:x(0),cy:y(cs[j][i0]),r:4.5,fill:col,stroke:'var(--surface)','stroke-width':2},svg));
+  const ov=el('rect',{x:X0,y:Y0,width:W,height:Hh,fill:'transparent'},svg);
+  ov.addEventListener('pointermove',e=>{const r=ov.getBoundingClientRect(),i=Math.max(0,Math.min(sw.length-1,Math.round((e.clientX-r.left)/r.width*(sw.length-1))));showTip(e,'<b>Margin shift '+(sw[i]>=0?'+':'−')+fmt(Math.abs(100*sw[i]),1)+' pts</b><br>Neutral: '+pct(cs[0][i])+'<br>NDA-optimised: '+pct(cs[1][i])+'<br>Optimised against: '+pct(cs[2][i]))});ov.addEventListener('pointerleave',hideTip);
+}
+
+/* ---------- trends ---------- */
+function lineChart(svg,xs,series,ymin,ymax,refs,xl){svg.innerHTML='';const X0=44,W=466,Y0=14,Hh=226,x=v=>X0+W*(v-xs[0])/(xs[xs.length-1]-xs[0]),y=v=>Y0+Hh*(1-(v-ymin)/(ymax-ymin));
+  for(let v=Math.ceil(ymin*10)/10;v<=ymax+1e-9;v+=.1){el('line',{x1:X0,x2:X0+W,y1:y(v),y2:y(v),stroke:'var(--rule)'},svg);el('text',{x:X0-6,y:y(v)+4,'text-anchor':'end',class:'m'},svg).textContent=Math.round(v*100)+'%'}
+  (refs||[]).forEach(([v,t,col])=>{el('line',{x1:X0,x2:X0+W,y1:y(v),y2:y(v),stroke:col||'var(--ink)','stroke-dasharray':'3 3'},svg);if(t)el('text',{x:X0+4,y:y(v)-5,class:'m s'},svg).textContent=t});
+  xl.forEach(v=>el('text',{x:x(v),y:Y0+Hh+16,'text-anchor':'middle',class:'m'},svg).textContent=v);
+  series.forEach(s=>{el('path',{d:'M'+s.v.map((p,i)=>x(xs[i]).toFixed(1)+','+y(p).toFixed(1)).join('L'),fill:'none',stroke:s.col,'stroke-width':2},svg);
+    s.v.forEach((p,i)=>{if(s.dots||i===s.v.length-1||i===0){const c=el('circle',{cx:x(xs[i]),cy:y(p),r:s.dots?4:3.5,fill:s.col,stroke:'var(--surface)','stroke-width':1.5},svg);bindTip(c,()=>'<b>'+s.name+', '+xs[i]+'</b><br>'+pct(p))}});
+    const last=s.v[s.v.length-1];el('text',{x:X0+W+4,y:y(last)+4,class:'m s'},svg).textContent=pct(last,0)})}
+function renderTrends(){
+  const H=S.H,ys=[2011,2021,2026,2031,2036],sh=(seats,set)=>set.reduce((a,c)=>a+seats[c],0)/H,ps=ys.map(y=>seatsFor('pop',H,y,1));
+  lineChart($('popch'),ys,[{name:'Hindi belt and Delhi',col:'var(--accent)',v:ps.map(s=>sh(s,HINDI)),dots:1},{name:'South',col:'var(--gain)',v:ps.map(s=>sh(s,SOUTH)),dots:1}],.1,.6,[[225/543,'',"var(--accent)"],[130/543,'','var(--gain)']],ys);
+  $('popSub').textContent='A '+H+'-seat House apportioned on each count. Official projections put Bihar above replacement fertility until 2039; the south has been below it since the early 2000s.';
+  const yr=[];for(let y=2023;y<=2051;y+=2)yr.push(y);const gs=yr.map(y=>gsdpShare(y,S.beta)),sm=(g,set)=>set.reduce((a,c)=>a+g[c],0);
+  const so=gs.map(g=>sm(g,SOUTH)),sw=gs.map(g=>sm(g,SOUTH.concat(WEST))),hb=gs.map(g=>sm(g,HINDI));
+  lineChart($('revch'),yr,[{name:'South plus west',col:'var(--loss)',v:sw},{name:'South',col:'var(--gain)',v:so},{name:'Hindi belt',col:'var(--accent)',v:hb}],.1,.6,[[.5,''],[1/3,'']],[2023,2030,2037,2044,2051]);
+  $('betaOut').textContent=(S.beta>=0?'':'−')+fmt(Math.abs(S.beta*100),2).replace(/\.?0+$/,'')+'%/yr';
+  const cross=yr.find((y,i)=>sw[i]<.5),below=yr.find((y,i)=>so[i]<130/543);
+  $('revNote').textContent='South plus west holds '+pct(sw[0])+' of the weight in 2023 and '+pct(sw[sw.length-1])+' in 2051'+(cross?', dropping below half around '+cross:'')+'. The south alone starts at '+pct(so[0])+', against 24.9% of today’s elected Rajya Sabha seats'+(below?', and falls under its present Lok Sabha share of 23.9% around '+below:'')+'. Population after 2036 is extended at each state’s 2031–36 pace.';
+  /* table */
+  const {seats,h}=calc(S.scheme,S.lv),rows=CODES.filter(c=>BY[c].cur>=4).sort((a,b)=>seats[b]-seats[a]);
+  $('tbl').innerHTML='<tr><th>State</th><th>Seats today</th><th>Seats under formula</th><th>Share change, pts</th><th>People per MP, 2026 (m)</th><th>NDA seats, selected map</th><th>NDA, neutral</th><th>NDA, optimised for</th><th>NDA, optimised against</th></tr>'+
+   rows.map(c=>{const dv=100*(seats[c]/h.H-BY[c].cur/543),f=L=>fmt(seats[c]*frac(c,seats[c],L)[0],1);return '<tr><td>'+BY[c].name+'</td><td>'+BY[c].cur+'</td><td>'+seats[c]+'</td><td>'+(dv>=0?'+':'−')+fmt(Math.abs(dv),2)+'</td><td>'+fmt(BY[c].pop[2026]/1000/seats[c],2)+'</td><td>'+fmt(h.st[c].nda,1)+'</td><td>'+f(2)+'</td><td>'+f(4)+'</td><td>'+f(0)+'</td></tr>'}).join('');
+}
+
+/* ---------- findings (fixed reference settings) ---------- */
+function findings(){
+  const keep={...S};const ref=(id,L,H,yr)=>{const seats=seatsFor(id,H,yr,.5),h=house(seats,L);return h};
+  const p2=ref('pop',2,816,2011),p4=ref('pop',4,816,2011),p3=ref('pop',3,816,2011),f2=ref('flat',2,816,2011),f4=ref('flat',4,816,2011),t2=ref('tharoor',2,816,2011),t4=ref('tharoor',4,816,2011),r4=ref('reddy',4,816,2011),n4=ref('novel',4,816,2011),p0=ref('pop',0,816,2011);
+  const tt=544,all=[['the bill as drafted',p4],['a flat scale-up',f4],['Reddy’s 50/50',r4],['Tharoor’s degressive rule',t4],['the fertility-window discount',n4]].sort((a,b)=>b[1].nda/b[1].H-a[1].nda/a[1].H);
+  const need=h=>Math.max(0,100*(tt-h.nda)/(h.H-h.nda));
+  const s2=ref('status',2,543,2011),pp=(h)=>pct(h.nda/h.H);
+  $('findings').innerHTML=
+   `<div><b>The lines matter more than the formula</b>With neutral lines at 816 seats, the NDA's 2024 votes yield ${pp(p2)} of the House under the bill as drafted and ${pp(f2)} under a flat scale-up. A neutral redraw of today's 543 seats gives ${pp(s2)}; the House actually elected was 54.0%.</div>`+
+   `<div><b>Largest NDA total found: ${fmt(p4.nda)} of 816</b>That is the bill as drafted with lines optimised for the NDA: ${pp(p4)}, with the BJP alone at ${fmt(p4.bjp)}. A map tilted inside the normal range gives ${fmt(p3.nda)}. The same search run against the NDA cuts it to ${fmt(p0.nda)}.</div>`+
+   `<div><b>Two-thirds is 544</b>Under the optimised map the government side would ${p4.nda>=tt?'clear it by '+fmt(p4.nda-tt)+' without help':'need '+fmt(need(p4),1)+'% of other members to cross over'}. For scale: in April it drew 5 votes beyond the NDA's elected 293, and after this year's defections its reported strength is 27 beyond. Those are 2% and 11% of other members.</div>`+
+   `<div><b>Worst case, formula by formula</b>NDA share with lines optimised in its favour: ${all.map(([n,h])=>n+' '+pct(h.nda/h.H,1)).join(', ')}. With neutral lines, Tharoor's rule gives ${pp(t2)}: it moves seats mainly to small states.</div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  SCHEMES.forEach(s=>$('sc-'+s.id).setAttribute('aria-pressed',s.id===S.scheme));
+  [2011,2026,2036].forEach(y=>$('yr-'+y).setAttribute('aria-pressed',y===S.year));
+  [...$('accPre').children].forEach(b=>b.setAttribute('aria-pressed',Math.abs(+b.dataset.v-S.acc)<.05));
+  $('lamBox').hidden=S.scheme!=='novel';$('yearBox').hidden=['flat','status','reddy'].includes(S.scheme);
+  $('H').disabled=S.scheme==='status';$('HOut').textContent=effH(S.scheme);$('lamOut').textContent=S.lam.toFixed(2);$('accOut').textContent=fmt(S.acc,1)+'%';
+  $('lvOut').textContent=LV[S.lv];$('lvHint').textContent=LVH[S.lv];
+  renderBoard();renderRange();renderIndia();renderState();renderSV();renderTrends();
+}
+let nPlans=0;for(const c in D.sim)for(const k in D.sim[c].runs)nPlans+=D.sim[c].runs[k].N+10000;
+$('planCount').textContent='In all, about '+fmt(Math.round(nPlans/1e5)/10,1)+' million plans were scored.';
+$('src').innerHTML=[
+ ['Election Commission of India 2024 results, via the india-votes-data archive','https://github.com/thecont1/india-votes-data'],
+ ['Assembly constituency boundaries, DataMeet','https://github.com/datameet/maps'],
+ ['Population projections 2011–2036, National Commission on Population','https://files.givewell.org//files/DWDA%202009/Interventions/KMC/India-gov_MoH-Population-Projections_2011-2036.pdf'],
+ ['PRS Legislative Research on the Delimitation Bill, 2026','https://prsindia.org/billtrack/the-delimitation-bill-2026'],
+ ['Carnegie Endowment, Delimitation After Defeat','https://carnegieendowment.org/research/2026/05/india-parliament-lok-sabha-representation-reapportionment-vote-women-elections'],
+ ['Rajagopalan, Demography, Delimitation, and Democracy','https://srajagopalan.substack.com/p/demography-delimitation-and-democracy'],
+ ['Reddy’s hybrid model, Deccan Chronicle','https://www.deccanchronicle.com/southern-states/telangana/revanth-reddy-seeks-delimitation-based-on-2026-census-1950191'],
+ ['Tharoor on degressive proportionality, Telangana Today','https://telanganatoday.com/shashi-tharoor-suggests-degressive-proportionality-for-lok-sabha-delimitation'],
+ ['Iyer, Weir and Ostermann on the 2008 delimitation','https://sites.nd.edu/lakshmi-iyer/files/2026/03/IWO_Political-Influence_Feb2026_Full.pdf'],
+ ['DeFord, Duchin and Solomon, Recombination','https://arxiv.org/abs/1911.05725'],
+ ['Cannon et al., Optimization by Short Bursts','https://arxiv.org/pdf/2011.02288']].map(([t,u])=>'<li><a href="'+u+'">'+t+'</a></li>').join('');
+findings();$('lab').hidden=false;$('trends').hidden=false;render();
+})();
+</script>

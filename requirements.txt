@@ -1,0 +1,10 @@
+geopandas
+gerrychain>=1.0
+networkx
+shapely>=2.0
+topojson
+numpy
+pandas
+rapidfuzz
+playwright  # only for analysis/shot.py
+pillow      # only for cropping screenshots

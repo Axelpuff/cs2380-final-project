@@ -1,0 +1,138 @@
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:9: ResourceWarning: unclosed file <_io.BufferedReader name='stage1.pkl'>
+  S=pickle.load(open('stage1.pkl','rb'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:3: ResourceWarning: unclosed file <_io.TextIOWrapper name='krange.json' mode='r' encoding='utf-8'>
+  KR=json.load(open('krange.json'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='../data/india-votes-data/data/csv/2022Assembly-UP.csv' mode='r' encoding='utf-8-sig'>
+  for r in csv.DictReader(open(f'../data/india-votes-data/data/csv/{f}.csv',encoding='utf-8-sig')):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:119: DeprecationWarning: gerrychain.tree.recursive_tree_part is deprecated; use gerrychain.partition.recursive_tree_part instead. The legacy import will be removed in GerryChain 2.0.
+  a=recursive_tree_part(graph,range(k),ideal,'w',eps,node_repeats=1)
+/usr/local/lib/python3.13/site-packages/gerrychain/tree/bipartition_tree.py:1246: UserWarning: node_repeats is not beneficial with `find_balanced_edge_cuts_memoization`, which exhaustively searches each spanning tree. Set node_repeats=0 to redraw the tree after an unsuccessful search. Positive values are useful only with `find_balanced_edge_cuts_contraction` or a custom cut-edge finder.
+  num_cuts, node_ids = _internal_bipartition_tree(
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:60: DeprecationWarning: SingleMetricOptimizer.__init__(..., proposal=...) is deprecated; use proposal_fn=... instead. The legacy name will be removed in GerryChain 2.0.
+  opt=SingleMetricOptimizer(proposal=prop,constraints=[constraints.contiguous],initial_state=start,optimization_metric=fn,maximize=True)
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:60: DeprecationWarning: SingleMetricOptimizer.__init__(..., optimization_metric=...) is deprecated; use optimization_metric_fn=... instead. The legacy name will be removed in GerryChain 2.0.
+  opt=SingleMetricOptimizer(proposal=prop,constraints=[constraints.contiguous],initial_state=start,optimization_metric=fn,maximize=True)
+UP k= 48 eps=0.20 ens mean NDA 21.19 [p5 19, p95 24] range 16-27 | bursts max 34 min 11 | actual - | 19s
+UP k= 67 eps=0.20 ens mean NDA 30.40 [p5 26, p95 34] range 23-36 | bursts max 46 min 13 | actual - | 19s
+/usr/local/lib/python3.13/site-packages/gerrychain/tree/bipartition_tree.py:1394: BipartitionWarning: 
+Failed to find a balanced cut after 1000 attempts.
+This can happen if there are relatively few ways to split a graph
+into 2 pieces with appropriate population balance (+/- epsilon)
+for example, if there is a choke-point in the middle of the 
+merged districts.
+
+If possible, consider enabling pair reselection within your
+MarkovChain proposal method to allow the algorithm to select
+a different pair of districts for recombination.
+  warnings.warn(
+UP k= 80 eps=0.20 ens mean NDA 36.57 [p5 33, p95 41] range 30-43 | bursts max 51 min 22 | actual 36 | 66s
+UP k= 86 eps=0.20 ens mean NDA 40.09 [p5 36, p95 44] range 33-46 | bursts max 55 min 19 | actual - | 24s
+UP k=105 eps=0.22 ens mean NDA 48.89 [p5 45, p95 53] range 42-55 | bursts max 68 min 31 | actual - | 28s
+UP k=124 eps=0.24 ens mean NDA 55.53 [p5 52, p95 60] range 51-64 | bursts max 77 min 37 | actual - | 22s
+UP k=143 eps=0.30 ens mean NDA 66.40 [p5 60, p95 72] range 58-75 | bursts max 86 min 47 | actual - | 25s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/UP.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='../data/india-votes-data/data/csv/2024Assembly-MH.csv' mode='r' encoding='utf-8-sig'>
+  for r in csv.DictReader(open(f'../data/india-votes-data/data/csv/{f}.csv',encoding='utf-8-sig')):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+MH k= 35 eps=0.20 ens mean NDA 15.77 [p5 14, p95 18] range 10-19 | bursts max 25 min 6 | actual - | 18s
+MH k= 44 eps=0.20 ens mean NDA 19.58 [p5 17, p95 22] range 15-24 | bursts max 31 min 9 | actual - | 18s
+MH k= 48 eps=0.20 ens mean NDA 21.78 [p5 18, p95 25] range 16-27 | bursts max 35 min 9 | actual 17 | 17s
+MH k= 53 eps=0.20 ens mean NDA 24.66 [p5 22, p95 28] range 20-30 | bursts max 38 min 10 | actual - | 26s
+MH k= 63 eps=0.20 ens mean NDA 29.61 [p5 26, p95 33] range 23-35 | bursts max 43 min 14 | actual - | 18s
+MH k= 72 eps=0.26 ens mean NDA 34.31 [p5 31, p95 38] range 27-42 | bursts max 55 min 14 | actual - | 24s
+MH k= 81 eps=0.20 ens mean NDA 39.12 [p5 34, p95 43] range 31-46 | bursts max 58 min 21 | actual - | 35s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/MH.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+TN k= 26 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual - | 16s
+TN k= 33 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual - | 15s
+TN k= 39 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual 0 | 14s
+TN k= 41 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual - | 38s
+TN k= 48 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual - | 31s
+TN k= 56 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual - | 15s
+TN k= 63 eps=0.20 ens mean NDA 0.00 [p5 0, p95 0] range 0-0 | bursts max 0 min 0 | actual - | 15s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/TN.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='../data/india-votes-data/data/csv/2023Assembly-KA.csv' mode='r' encoding='utf-8-sig'>
+  for r in csv.DictReader(open(f'../data/india-votes-data/data/csv/{f}.csv',encoding='utf-8-sig')):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+KA k= 25 eps=0.20 ens mean NDA 17.73 [p5 16, p95 20] range 14-22 | bursts max 23 min 10 | actual - | 28s
+KA k= 28 eps=0.20 ens mean NDA 19.61 [p5 18, p95 22] range 15-23 | bursts max 26 min 11 | actual 19 | 15s
+KA k= 30 eps=0.20 ens mean NDA 20.91 [p5 19, p95 23] range 17-24 | bursts max 27 min 11 | actual - | 17s
+KA k= 34 eps=0.20 ens mean NDA 23.70 [p5 21, p95 26] range 19-28 | bursts max 32 min 13 | actual - | 27s
+KA k= 39 eps=0.20 ens mean NDA 26.86 [p5 24, p95 29] range 22-31 | bursts max 35 min 15 | actual - | 15s
+KA k= 43 eps=0.20 ens mean NDA 29.78 [p5 28, p95 32] range 26-35 | bursts max 39 min 19 | actual - | 15s
+KA k= 48 eps=0.20 ens mean NDA 32.60 [p5 29, p95 35] range 27-37 | bursts max 42 min 21 | actual - | 14s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/KA.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+RJ k= 25 eps=0.20 ens mean NDA 13.58 [p5 12, p95 15] range 10-17 | bursts max 19 min 7 | actual 14 | 15s
+RJ k= 30 eps=0.20 ens mean NDA 16.16 [p5 14, p95 18] range 13-19 | bursts max 22 min 9 | actual - | 16s
+RJ k= 35 eps=0.20 ens mean NDA 18.69 [p5 17, p95 21] range 15-22 | bursts max 24 min 12 | actual - | 51s
+RJ k= 40 eps=0.20 ens mean NDA 21.01 [p5 19, p95 23] range 17-25 | bursts max 28 min 15 | actual - | 16s
+RJ k= 45 eps=0.20 ens mean NDA 23.54 [p5 21, p95 25] range 20-26 | bursts max 28 min 18 | actual - | 42s
+RJ k= 50 eps=0.26 ens mean NDA 26.20 [p5 24, p95 28] range 21-30 | bursts max 35 min 19 | actual - | 15s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/RJ.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+OD k= 16 eps=0.20 ens mean NDA 15.11 [p5 15, p95 16] range 14-16 | bursts max 16 min 14 | actual - | 14s
+OD k= 19 eps=0.20 ens mean NDA 17.99 [p5 17, p95 18] range 17-19 | bursts max 19 min 17 | actual - | 14s
+OD k= 21 eps=0.20 ens mean NDA 19.94 [p5 19, p95 21] range 19-21 | bursts max 21 min 19 | actual 20 | 13s
+OD k= 23 eps=0.20 ens mean NDA 21.81 [p5 21, p95 22] range 21-23 | bursts max 23 min 21 | actual - | 13s
+OD k= 26 eps=0.20 ens mean NDA 24.87 [p5 24, p95 26] range 23-26 | bursts max 26 min 23 | actual - | 21s
+OD k= 30 eps=0.20 ens mean NDA 28.92 [p5 28, p95 29] range 28-30 | bursts max 30 min 27 | actual - | 13s
+OD k= 33 eps=0.20 ens mean NDA 31.46 [p5 31, p95 32] range 30-33 | bursts max 33 min 29 | actual - | 12s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/OD.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='../data/india-votes-data/data/csv/2024Assembly-HR.csv' mode='r' encoding='utf-8-sig'>
+  for r in csv.DictReader(open(f'../data/india-votes-data/data/csv/{f}.csv',encoding='utf-8-sig')):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+HR k= 10 eps=0.20 ens mean NDA 4.46 [p5 3, p95 6] range 2-8 | bursts max 8 min 2 | actual 5 | 13s
+HR k= 13 eps=0.20 ens mean NDA 6.09 [p5 5, p95 8] range 4-10 | bursts max 11 min 2 | actual - | 12s
+HR k= 17 eps=0.20 ens mean NDA 8.67 [p5 7, p95 10] range 5-12 | bursts max 14 min 3 | actual - | 12s
+HR k= 20 eps=0.20 ens mean NDA 9.81 [p5 8, p95 12] range 6-14 | bursts max 16 min 5 | actual - | 12s
+HR k= 24 eps=0.20 ens mean NDA 11.93 [p5 10, p95 14] range 8-16 | bursts max 18 min 6 | actual - | 11s
+HR k= 27 eps=0.20 ens mean NDA 13.47 [p5 12, p95 16] range 8-18 | bursts max 20 min 8 | actual - | 10s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/HR.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='../data/india-votes-data/data/csv/2024Assembly-JH.csv' mode='r' encoding='utf-8-sig'>
+  for r in csv.DictReader(open(f'../data/india-votes-data/data/csv/{f}.csv',encoding='utf-8-sig')):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+JH k= 14 eps=0.20 ens mean NDA 9.14 [p5 8, p95 10] range 7-11 | bursts max 13 min 6 | actual 9 | 12s
+JH k= 17 eps=0.20 ens mean NDA 11.03 [p5 10, p95 12] range 9-13 | bursts max 15 min 7 | actual - | 11s
+JH k= 21 eps=0.23 ens mean NDA 13.69 [p5 12, p95 15] range 11-16 | bursts max 18 min 11 | actual - | 10s
+JH k= 24 eps=0.20 ens mean NDA 16.00 [p5 14, p95 18] range 13-18 | bursts max 19 min 11 | actual - | 10s
+JH k= 28 eps=0.31 ens mean NDA 18.09 [p5 16, p95 20] range 15-21 | bursts max 22 min 14 | actual - | 10s
+JH k= 31 eps=0.24 ens mean NDA 20.23 [p5 18, p95 22] range 17-23 | bursts max 26 min 15 | actual - | 10s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/JH.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/simlib.py:77: ResourceWarning: unclosed file <_io.TextIOWrapper name='../data/india-votes-data/data/csv/2025Assembly-DL.csv' mode='r' encoding='utf-8-sig'>
+  for r in csv.DictReader(open(f'../data/india-votes-data/data/csv/{f}.csv',encoding='utf-8-sig')):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+DL k=  4 eps=0.20 ens mean NDA 3.95 [p5 4, p95 4] range 3-4 | bursts max 4 min 3 | actual - | 16s
+DL k=  7 eps=0.20 ens mean NDA 6.56 [p5 6, p95 7] range 5-7 | bursts max 7 min 4 | actual 7 | 13s
+DL k= 12 eps=0.20 ens mean NDA 10.82 [p5 10, p95 12] range 9-12 | bursts max 12 min 8 | actual - | 12s
+DL k= 15 eps=0.20 ens mean NDA 13.18 [p5 12, p95 14] range 11-15 | bursts max 15 min 11 | actual - | 18s
+DL k= 19 eps=0.20 ens mean NDA 16.42 [p5 15, p95 17] range 14-18 | bursts max 19 min 13 | actual - | 16s
+DL k= 23 eps=0.32 ens mean NDA 20.15 [p5 19, p95 21] range 18-22 | bursts max 22 min 17 | actual - | 20s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/DL.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+HP k=  3 eps=0.20 ens mean NDA 3.00 [p5 3, p95 3] range 3-3 | bursts max 3 min 3 | actual - | 17s
+HP k=  4 eps=0.20 ens mean NDA 4.00 [p5 4, p95 4] range 4-4 | bursts max 4 min 4 | actual 4 | 15s
+HP k=  7 eps=0.20 ens mean NDA 7.00 [p5 7, p95 7] range 7-7 | bursts max 7 min 7 | actual - | 13s
+HP k=  9 eps=0.20 ens mean NDA 9.00 [p5 9, p95 9] range 9-9 | bursts max 9 min 9 | actual - | 12s
+HP k= 11 eps=0.20 ens mean NDA 11.00 [p5 11, p95 11] range 11-11 | bursts max 11 min 11 | actual - | 11s
+HP k= 13 eps=0.20 ens mean NDA 13.00 [p5 13, p95 13] range 13-13 | bursts max 13 min 13 | actual - | 11s
+/tmp/claude-0/-home-claude/83e15a0c-83da-5170-b03d-66e68090201b/scratchpad/work/run_state.py:68: ResourceWarning: unclosed file <_io.TextIOWrapper name='out/HP.json' mode='w' encoding='utf-8'>
+  json.dump(res,open(f'out/{code}.json','w'))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
