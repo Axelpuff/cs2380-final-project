@@ -1,16 +1,10 @@
-# Prompt
-
 > Can you tell me a narrative explanation of what happened? ... What objectives did you pursue and in what order? Highlight the decisions you made along the way and what you filled in. Make sure to delineate the specific points or goals I specified.
-
----
-
-# Response
 
 Here is the sequence, with what you specified separated from what I decided or filled in.
 
 ## What you asked for
 
-1. The worst-case power shift under the current BJP proposal, extrapolating current gerrymandering trends.
+1. The worst-case power shift under the current BJP delimitation (reapportionment) proposal, extrapolating current gerrymandering trends.
 2. The same under five alternatives: the verbal 1971-proportional plan, Reddy's 50/50, Tharoor's degressive proportionality, Rajagopalan's Revenue Sabha, and a new rule that discounts population growth from the fertility-control era.
 3. A gerrymandering simulation analysed with Moon Duchin's methods.
 4. Grounding in recent vote margins and coalition formation.
