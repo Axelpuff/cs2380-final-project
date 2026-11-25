@@ -1,0 +1,42 @@
+## What you asked for
+
+1. The worst-case power shift under the current BJP proposal, extrapolating current gerrymandering trends.
+2. The same under five alternatives: the verbal 1971-proportional plan, Reddy's 50/50, Tharoor's degressive proportionality, Rajagopalan's Revenue Sabha, and a new rule that discounts population growth from the fertility-control era.
+3. A gerrymandering simulation analysed with Moon Duchin's methods.
+4. Grounding in recent vote margins and coalition formation.
+5. The effect of demographic and economic trends.
+6. An impressive interactive visualization.
+
+## What I did, in order
+
+**1. Research.** I looked up the bill's status, each proposal, recent parliamentary votes and the gerrymandering record. Three of your formulas turned out to be under-specified, so I filled them in:
+- **Reddy:** two outlets reported his formula differently. I used: every state keeps its seats, half the new seats go in proportion to existing seats, half by state GDP.
+- **Tharoor:** he gave no formula, only two examples of people per MP. I fitted a curve through them (seats proportional to population to the power 0.52).
+- **Rajagopalan:** her Revenue Sabha replaces the Rajya Sabha, not the Lok Sabha. So I gave her the same Lok Sabha as the bill and treated the upper house separately in step 6.
+
+**2. Your new rule.** You gave the idea; the design is mine. Each state counts its 1971 population in full, its 1971–2021 growth at a reduced weight (default one half, adjustable), and later growth in full. I ended the window at 2021 because national fertility reached replacement level around then.
+
+**3. Data.** I found 2024 results for all 543 constituencies and a map of the roughly 4,000 state-assembly constituencies, the smaller units each Lok Sabha seat is built from. I could not find 2024 votes at that smaller level. My workaround was to spread each constituency's vote evenly over its assembly units. In eleven states I then shifted each unit by how it leaned in the latest state election. I checked that this reproduces the real 2024 result in every simulated state.
+
+**4. Seat allocation.** I rounded each formula with the Webster method (standard rounding of proportional shares). Small states keep at least their current seats. I defaulted to 816 seats, which is my choice; the bill's cap is 850.
+
+**5. Simulation.** I used GerryChain, the software from Duchin's lab, in 20 states.
+- **Neutral maps:** it generates thousands of random valid maps without looking at votes. Their average is my "neutral" result.
+- **Optimised maps:** a search method from her lab's summer programme (called short bursts) hunts for the map with the most NDA seats.
+- **Tilted maps:** my own middle level, the 95th percentile of the neutral maps in every state.
+- **Both directions:** you asked only about the BJP's worst case. I also ran the search against the NDA, to show the power belongs to whoever draws the lines.
+
+**6. Grounding and trends.** I compared results with the majority and two-thirds lines. I added a "cross-over" control set from two facts: the government drew 5 votes beyond its elected 293 in April, and its reported strength is now 27 beyond. For trends, I re-ran the allocation on official 2026 and 2036 population projections. For the Revenue Sabha I added a control for how fast poorer states catch up economically.
+
+**7. The page.** I built it, checked it at desktop and phone widths and in dark mode, and published it. The chart of how the advantage fades as opinion shifts was my addition.
+
+## Where I fell short of what you asked
+
+- **Gerrymandering trends:** I did not measure a trend from Assam or Jammu and Kashmir. "Tilted" is a stand-in I chose, not a calibration.
+- **Southern productivity:** I gave you a control, not a forecast, and did not model ageing.
+- **Revenue Sabha power:** I modelled regional weight only, not which parties would hold the seats.
+- **Duchin's papers:** I worked from my knowledge of the methods and did not re-read the papers. Her efficiency-gap measure assumes two parties; I adapted it by comparing the NDA with its strongest rival in each seat.
+- **Coverage:** Assam, Jammu and Kashmir and the small states and territories (39 seats in all) keep their 2024 split. Seat reservation is ignored.
+- **One unchecked figure:** the south's 24.9% share of today's Rajya Sabha is from memory; the page I tried to verify it against was blocked.
+
+The simulation code and outputs sit in a temporary workspace that can be cleared. I haven't touched the project folder you just connected; say the word and I'll copy them there.

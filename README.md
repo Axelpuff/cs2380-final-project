@@ -1,5 +1,7 @@
 # Delimitation Stress Test
 
+**See [SUMMARY.md](SUMMARY.md) for a more straightforward description.**
+
 How much partisan power moves when the Lok Sabha is reapportioned, and how much moves when the lines inside each state are redrawn. Built as a starting point for a CS 2380 (Optimized Democracy) final project.
 
 Seven seat formulas are combined with five ways of drawing constituencies. The 2024 Lok Sabha votes are recounted in each simulated map.
