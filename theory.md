@@ -1,270 +1,358 @@
-# Theory: the candidate seat rules, their background, and what they do in India
+# Theory: the seat rules, the math behind them, and what they do in India
 
-The simulation compares seat rules by what they do to party seat counts. This section looks at each rule on its own terms. For every method we first give its **background**: where the idea comes from, where it is used, and what is known about it. We then **apply it to India**: who has proposed it, what we can prove about it, and what it does with Indian data.
+This section has two parts.
 
-Everything here is about the **allocation between states**; nothing depends on how lines are drawn inside a state.
+- **Part A** sets out the mathematical framework from the course: the apportionment model, the methods, the properties and the theorems, using the lecture definitions and notation. A few extensions we need that are *not* in the lectures are marked **(ours)**.
+- **Part B** takes each seat rule in the Indian debate. It first gives the rule's mathematics in the Part A framework (definition, which properties it satisfies, proofs), then applies it to India.
 
-Numbers marked *Computed* come from the data in `analysis/apportion.py`: 2026 projected populations, all 36 states and union territories, and quota shares before rounding. The south means Andhra Pradesh, Karnataka, Kerala, Tamil Nadu, Telangana and Puducherry.
+**Sources for the definitions.** These are the CS 2380 lectures "Apportionment in the 19th Century", "Apportionment in the 20th Century" and "The Electoral College" (Procaccia). The Fall 2026 slides for these lectures are not posted on the course site, so we used the earlier versions of the same lectures: [Fall 2025, 19th century](https://procaccia.info/courses/CS2380-F25/slides16.pdf), [Spring 2021, 20th century](https://procaccia.info/courses/CS238-S21/CS238-16.pdf) and [Spring 2021, Electoral College](https://procaccia.info/courses/CS238-S21/CS238-19.pdf).
 
-> **TODO (group):** decide whether the paper uses 2026 projected populations throughout, and whether union territories are included (they are below).
+> **TODO (group):** check the definitions below against the Fall 2026 slides once they are posted.
+
+Numbers marked *Computed* come from `analysis/apportion.py`: 2026 projected populations, all 36 states and union territories. The south means Andhra Pradesh, Karnataka, Kerala, Tamil Nadu, Telangana and Puducherry.
 
 ---
 
-## 0. Model and properties
+# Part A. The framework
 
-There are $n$ units (states and union territories), $N=\lbrace 1,\dots,n\rbrace$; in our data $n=36$. Unit $i$ currently holds $c_i$ seats, with $H_0=\sum_i c_i=543$. Its population is $p_i$ today, $p_i^{71}$ at the 1971 census and $p_i^{21}$ in 2021. Write $P=\sum_i p_i$ and $\pi_i=p_i/P$ for the population share, and $g_i\ge 0$ with $\sum_i g_i=1$ for unit $i$'s share of national GDP.
+## A.1 The model (lecture)
 
-A **rule** takes this data and a House size $H\ge H_0$ and returns seats $s(H)\in\mathbb{Z}_{\ge 0}^n$ with $\sum_i s_i(H)=H$. Most rules below are **weight rules**: compute weights $w_i>0$, then round. The **quota** of unit $i$ is $q_i=Hw_i/\sum_j w_j$. For a region $R\subseteq N$, $Q_R=\sum_{i\in R}q_i/H$ is its quota share.
+- A set of states $N=\lbrace 1,\dots,n\rbrace$ and $K$ seats to be allocated.
+- State $i$ has population $p_i$, and the total population is $P=\sum_{i=1}^n p_i$.
+- The **standard quota** of state $i$ is $q_i=\dfrac{p_i}{P}\cdot K$: the number of seats it would get if seats could be fractional.
+- The **upper quota** of $i$ is $\lceil q_i\rceil$ and the **lower quota** is $\lfloor q_i\rfloor$.
+- $k_i$ is the number of seats allocated to $i$, with $\sum_i k_i=K$.
 
-**Definition (properties).** A rule satisfies
+The problem is that standard quotas are fractional, and simply rounding each one to the nearest integer may not add up to $K$. The lecture's example has quotas $50.6,\,30.7,\,18.7$, which round to $51+31+19=101\ne 100$. An **apportionment method** is a rule for choosing integers $k_i$ that do add up to $K$.
 
-- **(a) house monotonicity** if $s_i(H+1)\ge s_i(H)$ for every $i$ and $H$, i.e. no state loses a seat when the House grows;
-- **(b) population monotonicity** if, whenever populations change from $p$ to $p'$ at fixed $H$ with $p'_i/p'_j>p_i/p_j$, it is not the case that $i$ loses seats while $j$ gains;
-- **(c) exactness** ("one person, one vote") if whenever every $H\pi_i$ is an integer, $s_i=H\pi_i$ for all $i$;
-- **(d) restoration** for a region $R$ if $Q_R\ge\sum_{i\in R}c_i/H_0$, i.e. the region keeps at least its current share.
+## A.2 Hamilton's method (lecture)
 
-## 1. Rounding: Webster's method
+Give each state its lower quota $\lfloor q_i\rfloor$. Let $r_i=q_i-\lfloor q_i\rfloor$ be its residue, and hand out the remaining $K-\sum_i\lfloor q_i\rfloor$ seats one at a time to the states with the largest residues.
 
-### Background
+Hamilton's method is the obvious one, and Congress adopted an identical method in 1850. But it has paradoxes (A.4). We do not use it for any rule. It matters here because it is the method behind the original Alabama paradox, which we find again in Section B.6.
 
-Every rule produces fractional quotas, and seats are whole numbers, so a rounding method is needed. This is the classic apportionment problem from the US House. Daniel Webster proposed his method in 1832, and the US used it after the 1840, 1910 and 1930 censuses. André Sainte-Laguë rediscovered it in 1910 for allocating seats to parties, and under his name it is used today in Germany, New Zealand, Norway and Sweden.
+## A.3 Divisor methods (lecture)
 
-The method picks a divisor $d$ and rounds every $w_i/d$ to the nearest integer, adjusting $d$ until the seats add up to $H$:
+Choose a divisor $D$ and compute each state's **modified quota** $p_i/D$. Fix a rounding function $f$ with two properties:
 
-$$\mathrm{Web}(w,H)_i=\left[\,w_i/d\,\right],\qquad \textstyle\sum_i [w_i/d]=H.$$
+1. $f(x)=x$ whenever $x$ is an integer;
+2. $f(x)\ge f(y)$ whenever $x\ge y$.
 
-Equivalently, it hands out seats one at a time, each to the unit with the largest priority $w_i/(s_i+\tfrac12)$.
+Choose $D$ so that $\sum_i f(p_i/D)=K$, and set $k_i=f(p_i/D)$. Different rounding functions give the classical methods:
 
-Balinski and Young's theory of apportionment gives three facts we use throughout:
+| Method | Rounding $f(x)$ | Lecture's notes |
+|---|---|---|
+| Jefferson | $\lfloor x\rfloor$ | favours large states; used by Congress until 1830 |
+| Adams | $\lceil x\rceil$ | favours small states; never adopted |
+| **Webster** | $[x]$, ordinary rounding (round up at $\lfloor x\rfloor+\tfrac12$) | unbiased; adopted by Congress in 1842 |
+| Huntington–Hill | round up iff $x\ge\sqrt{\lfloor x\rfloor\lceil x\rceil}$ | rounds at the geometric mean; slightly favours small states |
 
-1. Webster's method, like every divisor method, is house monotone and population monotone **as long as the weights do not depend on $H$**.
-2. Divisor methods are exactly the population-monotone methods.
-3. No method is both population monotone and always within one seat of quota.
+**Well-definedness (lecture).** If two divisors $D\le D'$ both give totals of $K$, they give the same allocation. A smaller divisor gives every state at least as many seats, and both allocations sum to $K$.
 
-Among divisor methods, Webster's is the one that is unbiased between large and small states.
+**Sequential form (standard).** A divisor method can equivalently be run one seat at a time. Starting from zero seats, each new seat goes to the state with the largest priority $p_i/d(k_i)$, where $d(k)$ is the point at which $f$ rounds up to $k+1$. For Webster $d(k)=k+\tfrac12$, so the priority is $p_i/(k_i+\tfrac12)$. We use this form for computations and proofs.
 
-### Applying it to India
+**Example (Webster).** Take three states with populations $150, 320, 530$ and $K=10$. With $D=100$ the modified quotas are $1.5, 3.2, 5.3$, which round to $2+3+5=10$. So $k=(2,3,5)$. (Jefferson's method gives $(1,3,6)$ on the same data.)
 
-The Constitution says seats should be allotted so that the ratio of seats to population is the same for every state "so far as practicable" (Article 81), but it names no rounding method. We use Webster for every rule, because it is unbiased and because property 1 lets us separate the effect of a formula from the effect of rounding. Rounding usually moves each state by less than one seat, so the results below are stated for quotas.
+## A.4 Properties (lecture)
 
-## 2. The freeze and the flat scale-up
+**House monotonicity.** A method is house monotonic if $K'>K$, with all other variables unchanged, implies $k_i'\ge k_i$ for all $i\in N$. A violation is the **Alabama paradox**: a state loses a seat when the House grows. It was discovered in 1880, when Alabama would have dropped from 8 to 7 seats as the House went from 299 to 300 under Hamilton's method.
 
-### Background
+**Population monotonicity.** Take two censuses with populations $p_i$ and $p_i'$ and apportionments $k_i$ and $k_i'$; the house sizes $K$ and $K'$ may differ. A method is population monotonic if $k_i<k_i'$ and $k_j>k_j'$ together imply $p_i<p_i'$ or $p_j>p_j'$. In words, if $i$ gains seats and $j$ loses seats, then $i$'s population grew or $j$'s shrank. A violation is the **population paradox**.
 
-The 42nd Amendment of 1976, passed during the Emergency, froze the allocation of Lok Sabha seats among states at the 1971 census. The stated purpose was family planning: states that controlled their population should not lose seats for it. The 84th Amendment of 2001 extended the freeze until the first census after 2026. The 2008 delimitation redrew constituency boundaries inside states using the 2001 census but did not move seats between states.
+**Quota criterion.** A method satisfies quota if $\lfloor q_i\rfloor\le k_i\le\lceil q_i\rceil$ for all $i$, i.e. every state is within one seat of its standard quota.
 
-A "flat scale-up" keeps the frozen shares and simply enlarges the House: every state's seats grow by the same percentage. In weight-rule terms both are $w_i=c_i$.
+**Neutrality.** A method is neutral if permuting the states permutes the allocation in the same way.
 
-### Applying it to India
+## A.5 Theorems (lecture)
 
-In 2026 the government's ministers described their plan as a uniform 50% increase for every state, but the bill itself allocated seats by population (Section 3). The flat scale-up is the government's verbal assurance turned into a formula.
+**Theorem A1.** All divisor methods are population monotonic.
 
-With fixed weights $c$, the flat scale-up is house monotone (Section 1). It keeps every regional share exactly where it is, so it trivially satisfies restoration for the south. But it fails exactness as badly as the current House does.
+*Proof (lecture).* If $i$ gains seats, its modified quota rose: $p_i/D<p_i'/D'$. If $j$ loses seats, its modified quota fell: $p_j/D>p_j'/D'$. So $p_i'>(D'/D)p_i$ and $p_j'<(D'/D)p_j$. If $D'/D\le 1$ then $p_j'<p_j$; if $D'/D\ge 1$ then $p_i'>p_i$. $\square$
 
-*Computed.* The south keeps 23.94% of seats under the freeze and the flat scale-up, against 19.45% of the 2026 population.
+**Theorem A2.** Any population monotonic method is house monotonic.
 
-## 3. Population (the 2026 bill)
+*Proof (lecture).* Suppose $K'>K$ with populations unchanged. Some state $j$ must gain, $k_j'>k_j$. If some $i$ lost, $k_i'<k_i$, population monotonicity would force $p_j<p_j'$ or $p_i>p_i'$, but populations did not change. $\square$
 
-### Background
+**Corollary A3.** All divisor methods are house monotonic.
 
-Proportional representation of states by population is the default in federations. It is required for the US House, and it is the principle of India's Article 81. Its weakness is that a state's representation depends only on its current headcount. The 1976 framers saw this as a disincentive for family planning.
+**Theorem A4 (Balinski–Young).** No apportionment method is neutral, population monotonic and satisfies the quota criterion.
 
-### Applying it to India
+**Corollary A5.** No divisor method satisfies the quota criterion on every instance.
 
-The Constitution (131st Amendment) Bill, introduced in April 2026, removed the freeze, gave each state seats in proportion to its population, and raised the maximum size of the Lok Sabha from 550 to 850. It was based on the 2011 census and failed in Parliament. In our notation it is $w_i=p_i$, the only rule here that satisfies exactness.
+So Webster's method never has the Alabama or population paradoxes, but it can occasionally give a state more than one seat away from its quota. Hamilton's method satisfies quota but has both paradoxes.
 
-The southern objection can be stated as a theorem.
+## A.6 Weighted voting and the Banzhaf index (lecture)
 
-**Observation 1.** Let a rule depend only on current populations and be population monotone. If one unit's population is lower (others unchanged, $H$ fixed), that unit cannot have more seats.
+We need this for the Penrose argument in B.4.
 
-*Proof.* Suppose $p'_i<p_i$, $p'_j=p_j$ for $j\ne i$, and $s'_i>s_i$. Since $\sum s'=\sum s=H$, some $j$ has $s'_j<s_j$. But $p'_j/p'_i>p_j/p_i$, so $j$'s relative population rose while $j$ lost and $i$ gained, contradicting population monotonicity. $\square$
+- A **simple cooperative game** is $(N,v)$ with $v:2^N\to\lbrace 0,1\rbrace$ monotone: if $v(S)=1$ and $S\subseteq T$ then $v(T)=1$. Coalition $S$ is winning if $v(S)=1$.
+- A **weighted voting game** has weights $w_i$ and a quota $q$, with $v(S)=1$ iff $\sum_{i\in S}w_i\ge q$.
+- The **Banzhaf power index** of player $i$ is
 
-So under the bill, and under every other monotone rule that looks only at today's census, a state that slowed its growth is never better off. Such a rule can at most soften the penalty. The degressive rule (Section 5) softens it for all growth alike. The fertility window (Section 4) softens it only for growth during a chosen period, and to do that it has to use past census data.
+$$\beta_i=\frac{1}{2^{n-1}}\sum_{S\subseteq N\setminus\lbrace i\rbrace}\bigl[v(S\cup\lbrace i\rbrace)-v(S)\bigr],$$
 
-*Computed.* The south's quota share falls from 23.94% today to 19.45%.
+  the probability that $i$ is pivotal when the other players join a coalition independently with probability $\tfrac12$.
+- **Pivotal voter in a state.** If each of a state's $p=2k+1$ voters votes for one of two alternatives independently and uniformly at random, a given voter breaks a tie with probability $\binom{2k}{k}/2^{2k}\approx\sqrt{2/(\pi p)}$ by Stirling's approximation.
+- **Two-tier influence.** If a state's representatives vote as a bloc, a citizen affects the outcome with probability about $\sqrt{2/(\pi p_i)}\cdot\beta_i$, where $\beta_i$ is the state's Banzhaf index in the upper tier.
 
-## 4. The fertility window (new)
+## A.7 Extensions we need (ours)
 
-### Background
+The lecture methods take only populations as input. Every rule in the Indian debate instead runs a divisor method on some other **weights**, so we generalise slightly.
 
-Rewarding states for lowering fertility already has a precedent in Indian fiscal federalism. The Finance Commission divides central tax revenue among states by a formula. Until the 14th Commission (2015–20), that formula used 1971 population at a weight of 17.5%. The 15th Commission (2020–26) was told to use 2011 population, and to compensate it added a **demographic performance** criterion worth 12.5%. This criterion is the reciprocal of each state's total fertility rate, scaled by its 1971 population, so states with lower fertility score higher.
+**Definition (weight rule) (ours).** A weight rule computes a weight $w_i>0$ for each state from the data, then applies Webster's method with $w_i$ in place of $p_i$: choose $D$ with $\sum_i[w_i/D]=K$ and set $k_i=[w_i/D]$. Its **quota** is $\tilde q_i=K w_i/\sum_j w_j$, the quota with respect to its own weights. When we need the standard quota of A.1, computed from population, we write $q_i$.
 
-The same argument recurs in the delimitation debate. Telangana's Chief Minister argued in April 2026 that a purely population-based reallocation would punish states that implemented family planning.
+**Lemma A6 (ours).** Suppose a weight rule's weights do not depend on $K$, and each $w_i=\varphi_i(p_i)$ is a strictly increasing function of state $i$'s own population; other data, such as past censuses, are held fixed. Then the rule is population monotonic and house monotonic.
 
-### Applying it to India
+*Proof.* Repeat the proof of Theorem A1 with $w$ in place of $p$. If $i$ gains and $j$ loses, then $w_i'>w_i$ or $w_j'<w_j$, so $p_i'>p_i$ or $p_j'<p_j$ because each $\varphi_i$ is strictly increasing. House monotonicity follows from Theorem A2. $\square$
 
-No one has proposed a seat formula of this kind, so this rule is ours. It discounts exactly the growth that happened during the population-control era. Growth during 1971–2021 counts at weight $\lambda\in[0,1]$, while the 1971 base and growth after 2021 count in full:
+If the weights do not depend on population at all, the same argument gives population monotonicity vacuously: the allocation never responds to population.
+
+**Definition (region share, restoration) (ours).** For a set of states $R\subseteq N$ (a region), its quota share is $Q_R=\sum_{i\in R}\tilde q_i/K$. Let $c_i$ be current seats, with $K_0=\sum_i c_i=543$. A rule **restores** $R$ if $Q_R\ge\sum_{i\in R}c_i/K_0$, i.e. the region keeps at least its current share of seats.
+
+**Observation A7 (ours, from the lecture's definition).** Let a rule depend only on current populations and be population monotonic. If one state's population is lower, with all other populations and $K$ unchanged, that state cannot have more seats.
+
+*Proof.* Suppose $p_i'<p_i$, $p_j'=p_j$ for $j\ne i$, and $k_i'>k_i$. Since both allocations sum to $K$, some $j$ has $k_j'<k_j$. Then $i$ gains and $j$ loses, so population monotonicity requires $p_i<p_i'$ or $p_j>p_j'$. Neither holds. $\square$
+
+This is the formal version of the southern complaint. Under any such rule, slowing your population growth can never win you seats.
+
+---
+
+# Part B. The rules
+
+The rules are compared at $K=816$ (the House size the simulation uses; the bill's cap was 850) and, where it matters, over $K\in[543,850]$. Shares are quota shares before rounding, $Q_R$ in the notation of A.7.
+
+## B.1 Freeze and flat scale-up
+
+### The math
+
+The weights are $w_i=c_i$, the current seats, so this is Webster's method on the vector $c$. At $K=K_0$ every quota $\tilde q_i=c_i$ is an integer and the rule returns $c$. For $K>K_0$ every state grows by the same proportion, up to rounding.
+
+- **House monotonic:** yes. The weights are fixed, so Corollary A3 applies.
+- **Population monotonic:** yes, vacuously. Populations never enter.
+- **Quota criterion with respect to population:** no. Seats ignore population entirely.
+- **Restoration:** every region keeps exactly its current share, by construction.
+
+### In India
+
+The 42nd Amendment of 1976 froze the allocation of seats among states at the 1971 census. It was explicitly a family-planning measure: states that controlled their population should not lose seats for it. The 84th Amendment of 2001 extended the freeze until the first census after 2026. Ministers described the 2026 plan as a uniform 50% increase for every state, which is this rule with $K\approx 815$.
+
+*Computed.* At $K=816$ the flat scale-up puts 28 of 36 units outside $[\lfloor q_i\rfloor,\lceil q_i\rceil]$ of their population quota. For example, Bihar gets 60 seats against a quota of 75.8. The south keeps 23.94% of seats while holding 19.45% of the population.
+
+## B.2 Population (the 2026 bill)
+
+### The math
+
+This is the lecture's model exactly: $w_i=p_i$, Webster's method.
+
+- **House monotonic and population monotonic:** yes, by Theorem A1 and Corollary A3.
+- **Quota criterion:** not guaranteed (Corollary A5), but on our data it holds. At $K=816$ every state is within one seat of its quota.
+- **Slower growth:** penalised. Observation A7 applies directly.
+
+Pure Webster gives zero seats to the smallest units. At $K=816$, Sikkim, the Andaman and Nicobar Islands, Ladakh and Lakshadweep have quotas below $\tfrac12$. The Constitution guarantees at least one seat, and the simulation keeps states under 6 million at their current seats. These floors are discussed in B.5.
+
+### In India
+
+Article 81 asks for the ratio of seats to population to be the same for every state "so far as practicable". The Constitution (131st Amendment) Bill of April 2026 would have restored that principle on 2011 census figures, with a cap of 850 seats. It failed in Parliament.
+
+*Computed.* The south's share falls from 23.94% to 19.45%.
+
+## B.3 The fertility window (new)
+
+### The math
+
+Growth during 1971–2021 counts at a weight $\lambda\in[0,1]$, while the 1971 base and growth after 2021 count in full:
 
 $$w_i(\lambda)=p_i^{71}+\lambda\,(p_i^{21}-p_i^{71})+(p_i-p_i^{21}).$$
 
-At $\lambda=1$ it is the bill. The window ends in 2021 because national fertility reached replacement level around then.
+At $\lambda=1$ this is the population rule. Holding $p^{71}$ and $p^{21}$ fixed, $w_i$ is strictly increasing in the current population $p_i$ and does not depend on $K$. So by Lemma A6 the rule is **house monotonic and population monotonic**.
 
-> **TODO (group):** confirm the end year and the default $\lambda=0.5$, which the simulation also uses.
+The interesting question is how shares move as $\lambda$ changes.
 
-**Proposition 2.** Write $a_i=p_i^{71}+(p_i-p_i^{21})$ and $b_i=p_i^{21}-p_i^{71}$, so $w_i(\lambda)=a_i+\lambda b_i$, and let $A=\sum_i a_i$, $B=\sum_i b_i$. For every region $R$ (in particular every single unit), the quota share $Q_R(\lambda)$ is monotone in $\lambda$: increasing if $b_R/a_R>B/A$ and decreasing if $b_R/a_R<B/A$, where $a_R=\sum_{i\in R}a_i$ and $b_R=\sum_{i\in R}b_i$.
+**Proposition B1.** Write $a_i=p_i^{71}+(p_i-p_i^{21})$ and $b_i=p_i^{21}-p_i^{71}$, so $w_i(\lambda)=a_i+\lambda b_i$, and let $A=\sum_i a_i$, $B=\sum_i b_i$. For every region $R$ (in particular every single state), $Q_R(\lambda)$ is monotone in $\lambda$. It is increasing if $b_R/a_R>B/A$ and decreasing if $b_R/a_R<B/A$, where $a_R=\sum_{i\in R}a_i$ and $b_R=\sum_{i\in R}b_i$.
 
 *Proof.* $Q_R(\lambda)=(a_R+\lambda b_R)/(A+\lambda B)$, so
 
-$$Q_R'(\lambda)=\frac{b_R(A+\lambda B)-B(a_R+\lambda b_R)}{(A+\lambda B)^2}=\frac{b_RA-a_RB}{(A+\lambda B)^2},$$
+$$Q_R'(\lambda)=\frac{b_R(A+\lambda B)-B(a_R+\lambda b_R)}{(A+\lambda B)^2}=\frac{b_RA-a_RB}{(A+\lambda B)^2}.$$
 
-whose numerator does not depend on $\lambda$ and whose denominator is positive. $\square$
+The numerator does not depend on $\lambda$ and the denominator is positive. $\square$
 
-**Corollary 3.** If there is no growth after the window ($p=p^{21}$), unit $i$ gains as $\lambda$ rises exactly when its 1971–2021 growth factor $p_i^{21}/p_i^{71}$ exceeds the national factor.
+**Corollary B2.** If there is no growth after the window ($p=p^{21}$), state $i$ gains as $\lambda$ rises exactly when its 1971–2021 growth factor $p_i^{21}/p_i^{71}$ exceeds the national factor.
 
-The weights do not depend on $H$, so the rule is also house monotone.
+The penalty for slower growth is softened but not removed. A state that grew less during the window still has a lower weight, just by $\lambda$ times as much.
+
+### In India
+
+No one has proposed this seat formula, so it is ours. Rewarding lower fertility does have a precedent in Indian fiscal federalism. The 15th Finance Commission (2020–26) had to switch its tax-sharing formula from 1971 to 2011 population. To compensate, it added a "demographic performance" criterion worth 12.5%: the reciprocal of each state's total fertility rate, scaled by its 1971 population. Telangana's Chief Minister made the same argument about seats in April 2026, saying a purely population-based reallocation punishes the states that implemented family planning.
+
+> **TODO (group):** confirm the 2021 end year (around when national fertility reached replacement level) and the default $\lambda=0.5$.
 
 *Computed.*
-- The national growth factor for 1971–2021 is 2.48. Every southern state except Puducherry grew more slowly.
-- With 2026 populations the condition in Proposition 2 still holds for the south as a region. Its quota share falls monotonically from 23.24% at $\lambda=0$ to 19.45% at $\lambda=1$ (20.58% at $\lambda=0.5$).
-- No state's share ever reverses direction along the way.
+- The national 1971–2021 growth factor is 2.48. Every southern state except Puducherry grew more slowly.
+- The south's share falls monotonically from 23.24% at $\lambda=0$ to 19.45% at $\lambda=1$ (20.58% at $\lambda=0.5$), and no state ever reverses direction.
+- At $\lambda=0.5$, 9 states fall outside one seat of their population quota.
+- Even $\lambda=0$ does not restore the south, because growth after 2021 counts in full.
 
-So $\lambda$ is a **one-dimensional compromise in which every state knows which way it wants the dial turned**, much like the Finance Commission's 12.5% weight. But even $\lambda=0$ does not restore the south (23.24% against 23.94%), because growth after 2021 still counts in full.
+## B.4 Degressive proportionality (Tharoor)
 
-## 5. Degressive proportionality (Tharoor)
+### The math
 
-### Background
+The weights are $w_i=p_i^\alpha$ for $\alpha\in[0,1]$. At $\alpha=1$ this is the population rule. At $\alpha=0$ every state gets the same weight, as in the US Senate. In between, larger states get more seats but fewer seats per person: seats per citizen scale like $p_i^{\alpha-1}$. Since $p\mapsto p^\alpha$ is strictly increasing and independent of $K$, Lemma A6 makes the rule **house monotonic and population monotonic** for every $\alpha>0$.
 
-Degressive proportionality means larger units get more seats, but fewer seats per person. It is the treaty rule for the European Parliament. Article 14(2) of the Treaty on European Union requires representation to be degressively proportional, with at least 6 and at most 96 seats per member state.
-
-The treaty does not fix a formula, and mathematicians have proposed several. The best known is the Cambridge Compromise of 2011, which gives each state 5 base seats plus seats in proportion to population, capped at 96. That is a floor rule (Section 6). Power laws $w_i=p_i^\alpha$, which give a smooth version, have also been studied for the Parliament.
-
-A related classical result is Penrose's square-root law (1946). Suppose each state's delegation votes as a single bloc and citizens vote independently at random. Then giving state $i$ voting weight proportional to $\sqrt{p_i}$ makes every citizen's Banzhaf power roughly equal. The Jagiellonian Compromise proposed this for voting in the EU Council.
-
-### Applying it to India
-
-In April 2026 Shashi Tharoor proposed degressive proportionality for the Lok Sabha, citing the European Parliament. His proposal let the number of citizens per MP rise with a state's population. He gave no formula, only two examples: a state of 30 million at 1 million people per MP and a state of 200 million at 2.5 million per MP. A power law through both examples has $\alpha=\ln(80/30)/\ln(200/30)\approx 0.517$, so we study $D_\alpha$ with $w_i=p_i^\alpha$. $D_1$ is the bill, and $D_0$ gives every unit the same weight, as in the US Senate.
-
-**Proposition 4.** Under $D_\alpha$ with not all populations equal, let $\ell_i=\ln p_i$, $x_i=p_i^\alpha/\sum_k p_k^\alpha$ (unit $i$'s quota share) and $\mu(\alpha)=\sum_j x_j\ell_j$ (the quota-weighted mean log population). Then:
+**Proposition B3.** Assume not all populations are equal. Let $\ell_i=\ln p_i$, let $x_i=p_i^\alpha/\sum_k p_k^\alpha$ be state $i$'s quota share, and let $\mu(\alpha)=\sum_j x_j\ell_j$ (the share-weighted mean log population). Then:
 
 1. $\frac{d}{d\alpha}\ln x_i=\ell_i-\mu(\alpha)$, and $\mu$ is strictly increasing;
-2. each unit's quota share is single-peaked in $\alpha$: it rises while $p_i>e^{\mu(\alpha)}$ and falls afterwards;
-3. the largest unit's share is strictly increasing and the smallest unit's is strictly decreasing.
+2. each state's share is single-peaked in $\alpha$: it rises while $p_i>e^{\mu(\alpha)}$ and falls afterwards;
+3. the largest state's share is strictly increasing and the smallest state's is strictly decreasing.
 
 *Proof.* $\ln x_i=\alpha\ell_i-\ln\sum_k e^{\alpha\ell_k}$, so $\frac{d}{d\alpha}\ln x_i=\ell_i-\sum_k x_k\ell_k=\ell_i-\mu$. Using $x_j'=x_j(\ell_j-\mu)$,
 
 $$\mu'=\sum_j x_j'\ell_j=\sum_j x_j\ell_j^2-\mu^2=\mathrm{Var}_x(\ell)>0,$$
 
-strict because every $x_j>0$ and the $\ell_j$ are not all equal. So $\ell_i-\mu(\alpha)$ is strictly decreasing and changes sign at most once, from positive to negative; that is (2). For (3), $\mu$ is a weighted average with positive weight on every unit, so $\ell_{\min}<\mu<\ell_{\max}$ for all $\alpha$. $\square$
+strict because every $x_j>0$ and the $\ell_j$ are not all equal. So $\ell_i-\mu(\alpha)$ is strictly decreasing and changes sign at most once, from positive to negative; that is (2). For (3), $\mu$ is a weighted average with positive weight on every state, so $\ell_{\min}<\mu<\ell_{\max}$. $\square$
 
-Single units behave simply, but regions need not. For a region, $\frac{d}{d\alpha}Q_R=Q_R(\mu_R-\mu)$, where $\mu_R$ is the mean log population within $R$. Both means move with $\alpha$, so the sign can flip. Unlike the fertility window, this dial does not tell every region which way to turn it.
+A region need not behave this way. For a region, $\frac{d}{d\alpha}Q_R=Q_R(\mu_R-\mu)$, where $\mu_R$ is the mean log population within $R$. Both means move with $\alpha$, so the sign can flip. This is unlike the fertility window, where every region always wants the dial turned the same way.
 
-*Computed.*
-- The south's quota share is 16.7% at $\alpha=0$, peaks at 21.16% at $\alpha\approx 0.558$, and falls to 19.45% at $\alpha=1$.
-- Tharoor's fitted $\alpha=0.517$ gives the south 21.14%, almost exactly at the south-maximising exponent.
-- Even so, no $\alpha$ restores the south, and it is not true that "more degressive" always means "better for the south." Degressive rules mainly help the Northeast and the union territories, whose combined share rises from 4.0% at $\alpha=1$ to 10.9% at $\alpha=0.517$, mostly at the expense of the Hindi belt (48.8% to 41.6%).
+**Where $\alpha=\tfrac12$ comes from (Penrose's square-root law, derived from A.6).** Suppose each state's MPs voted as a bloc with weight $w_i$. A citizen of state $i$ would be decisive with probability about $\sqrt{2/(\pi p_i)}\cdot\beta_i$. When there are many states and none dominates, $\beta_i$ is roughly proportional to $w_i$. This approximation is not from the lecture, and the lecture's Electoral College table shows it is only rough. Under it, citizen influence is proportional to $w_i/\sqrt{p_i}$, which is equal across states exactly when $w_i\propto\sqrt{p_i}$, i.e. $\alpha=\tfrac12$. The argument needs bloc voting by state. Lok Sabha MPs vote by party, and the anti-defection law enforces this, so the justification does not carry over directly.
 
-**Remark (does Penrose apply?).** Tharoor's exponent is close to Penrose's $\tfrac12$, but the justification does not carry over directly. Penrose assumes each state's delegation votes as a bloc. Lok Sabha MPs vote by party, not by state, and the anti-defection law (Tenth Schedule) enforces party discipline.
+> **TODO (group):** decide whether to compute Banzhaf indices for party blocs in the Lok Sabha.
 
-> **TODO (group):** decide whether to compute Banzhaf power for party blocs, which would connect to the class material on weighted voting.
+### In India
 
-## 6. Floor plus proportional
-
-### Background
-
-Guaranteed minimums are the most common departure from strict proportionality. The US Constitution gives every state at least one representative. Brazil's Chamber of Deputies gives every state between 8 and 70 seats; the floor helps many small states, and the cap binds only São Paulo. The Cambridge Compromise for the European Parliament is base-plus-proportional with 5 base seats. India already has a version: states under 6 million people are exempt from strict proportionality (Article 81), and every small state and union territory has at least one seat.
-
-### Applying it to India
-
-We study the clean version: every unit gets $f$ seats, and the remaining $H-nf$ go by population, so $q_i=f+(H-nf)\pi_i$ for $0\le f\le H/n$. It is natural to ask how large a floor would need to be to keep today's north–south balance.
-
-**Proposition 5.** Under $L_f$ with $\theta=nf/H\in[0,1]$, every region's quota share is
-
-$$Q_R=\theta\,\frac{\lvert R\rvert}{n}+(1-\theta)\,\pi_R,\qquad \pi_R=\sum_{i\in R}\pi_i.$$
-
-In particular $Q_R$ lies between $\pi_R$ and $\lvert R\rvert/n$, and no floor restores a region whose current seat share exceeds both.
-
-*Proof.* $Q_R=\frac1H\sum_{i\in R}\bigl(f+(H-nf)\pi_i\bigr)=\frac{\lvert R\rvert f}{H}+\bigl(1-\frac{nf}{H}\bigr)\pi_R$, and $\lvert R\rvert f/H=\theta\lvert R\rvert/n$. $\square$
-
-With fixed $f$, $L_f$ is $f$ plus Webster on fixed weights $p$ for the remaining seats, so it is house monotone.
+Degressive proportionality is the treaty rule for the European Parliament, which gives every member state between 6 and 96 seats; the treaty fixes no formula. In April 2026 Shashi Tharoor proposed it for the Lok Sabha, letting the number of citizens per MP rise with a state's population. He gave two examples: a state of 30 million at 1 million people per MP (30 seats) and a state of 200 million at 2.5 million per MP (80 seats). A power law through both has $\alpha=\ln(80/30)/\ln(200/30)\approx 0.517$, close to Penrose's $\tfrac12$.
 
 *Computed.*
-- The south has 6 of 36 units (16.7%), 19.45% of the 2026 population and 23.94% of current seats. Both bounds are below its current share, so **no floor restores the south; every floor lowers its share**.
-- At $H=816$, a floor of 10 seats gives the south 18.2%.
-- Floors help regions with many small units, here the Northeast and the union territories, not regions of large, slow-growing states. The answer to our question is that no floor size works.
+- The south's share is 16.7% at $\alpha=0$, peaks at 21.16% at $\alpha\approx 0.558$, and is 19.45% at $\alpha=1$. Tharoor's $\alpha=0.517$ gives 21.14%, almost exactly the south's best case, and still no $\alpha$ restores it.
+- Most of the gain goes elsewhere. The Northeast and union territories rise from 4.0% to 10.9% of seats, mostly at the expense of the Hindi belt (48.8% to 41.6%).
+- At $\alpha=0.517$, 35 of 36 units are more than one seat from their population quota.
 
-## 7. The hybrid rule (Reddy)
+## B.5 Floor plus proportional
 
-### Background
+### The math
 
-Weighting representation by economic contribution has no modern precedent in a lower house. Its critics in India made the same point: the Union Minister G. Kishan Reddy said no such model exists anywhere in the world, and the BRS called it unconstitutional. The closest Indian analogue runs in the opposite direction. The Finance Commission gives poorer states more revenue through its "income distance" criterion (45% of the formula).
+Every state gets $f$ seats, and the remaining $K-nf$ are apportioned by Webster's method on population:
 
-The mathematical background here is the **Alabama paradox**. After the 1880 census, the US House was apportioned with Hamilton's method. Calculations showed that enlarging the House from 299 to 300 seats would have cut Alabama's seats from 8 to 7. Divisor methods with fixed weights never do this (Section 1). The question is whether a rule whose weights change with the House size can.
+$$k_i=f+\mathrm{Web}(p,\,K-nf)_i,\qquad \tilde q_i=f+(K-nf)\frac{p_i}{P},\qquad 0\le f\le K/n.$$
 
-### Applying it to India
+The second term is a divisor method on $p$ with house size $K-nf$, and adding the constant $f$ changes neither seat comparisons nor population comparisons. So the rule is **house monotonic and population monotonic** by Theorem A1 and Corollary A3.
 
-In April 2026 Telangana's Chief Minister A. Revanth Reddy proposed a "hybrid" model: half of the new seats allocated pro rata and half by states' contribution to GDP. Press reports differ on whether "pro rata" means current seats or population. We read it as current seats, since the government's own plan was a pro-rata 50% increase. Earlier, in 2025, he had asked that the five southern states' share rise from about 24% to 33%, in line with their GDP contribution.
+**Proposition B4.** Let $\theta=nf/K\in[0,1]$ and $\pi_R=\sum_{i\in R}p_i/P$. Every region's quota share is
 
-Formally, every unit keeps $c_i$. With $m_i=\tfrac12 c_i/H_0+\tfrac12 g_i$, the targets are $t_i(H)=c_i+(H-H_0)m_i$, which sum to $H$. $R(H)$ is Webster's method started from the floors: begin at $s=c$ and give each new seat to the unit with the largest $t_i(H)/(s_i+\tfrac12)$. Unlike every other rule here, the weights $t(H)$ depend on $H$.
+$$Q_R=\theta\,\frac{\lvert R\rvert}{n}+(1-\theta)\,\pi_R.$$
+
+So $Q_R$ lies between the region's population share $\pi_R$ and its share of states $\lvert R\rvert/n$, and no floor restores a region whose current seat share exceeds both.
+
+*Proof.* $Q_R=\frac1K\sum_{i\in R}\bigl(f+(K-nf)\pi_i\bigr)=\frac{\lvert R\rvert f}{K}+\bigl(1-\frac{nf}{K}\bigr)\pi_R$, and $\lvert R\rvert f/K=\theta\lvert R\rvert/n$. $\square$
+
+### In India
+
+Floors are the most common departure from strict proportionality. The US Constitution guarantees every state one representative (the lecture's opening slide). Brazil gives every state between 8 and 70 deputies. The Cambridge Compromise proposed for the European Parliament is 5 base seats plus proportional seats. India already exempts states under 6 million from strict proportionality, and every small state and union territory has at least one seat. A natural question is how large a floor would need to be to keep today's north–south balance.
+
+*Computed.*
+- The south has 6 of 36 units (16.7%), 19.45% of the population and 23.94% of current seats.
+- Both bounds in Proposition B4 are below its current share, so **no floor restores the south, and every floor lowers its share**. At $K=816$, $f=10$ gives 18.2%.
+- Floors help regions with many small units: the Northeast and the union territories.
+- At $f=10$, 33 units are more than one seat from their population quota.
+
+## B.6 The hybrid rule (Reddy)
+
+### The math
+
+Every state keeps its current seats $c_i$. The $K-K_0$ new seats are split half in proportion to current seats and half by GDP share $g_i$ (with $\sum_i g_i=1$). With $m_i=\tfrac12 c_i/K_0+\tfrac12 g_i$, the targets are
+
+$$t_i(K)=c_i+(K-K_0)\,m_i,\qquad \sum_i t_i(K)=K.$$
+
+$R(K)$ is Webster's method in sequential form (A.3) started from the floors. Begin at $k=c$, and give each new seat to the state with the largest priority $t_i(K)/(k_i+\tfrac12)$.
+
+Unlike every other rule here, **the weights $t(K)$ depend on $K$**, so Lemma A6 does not apply. In fact the rule fails both properties.
+
+**Proposition B5.** $R$ is not house monotonic.
+
+*Proof.* Take three states with $c=(1,1,2)$, so $K_0=4$, and $g=(\tfrac25,\tfrac12,\tfrac1{10})$. Then $m=(\tfrac{13}{40},\tfrac{15}{40},\tfrac{12}{40})$.
+
+- $K=5$: $t=(1.325,\,1.375,\,2.3)$. From $(1,1,2)$ the priorities are $0.883$, $0.917$ and $0.920$, so state 3 gets the seat and $k=(1,1,3)$.
+- $K=6$: $t=(1.65,\,1.75,\,2.6)$. From $(1,1,2)$ the priorities are $1.10$, $1.17$ and $1.04$. State 2 gets a seat (its priority drops to $0.70$), then state 1, so $k=(2,2,2)$.
+
+State 3 drops from 3 seats to 2 when the House grows: an Alabama paradox. $\square$
+
+**Corollary B6.** $R$ is not population monotonic.
+
+*Proof.* By Theorem A2, a population monotonic method is house monotonic. $\square$
+
+The cause is that state 3's *target share* $t_3(K)/K$ falls as the House grows ($0.46\to 0.43$), because its GDP share is below its seat share. States just below a rounding threshold then overtake it. This is the same mechanism as Hamilton's paradox, where quotas also shift with $K$.
+
+**Lemma B7.** If $g_i=c_i/K_0$ for all $i$, then $R$ is house monotonic.
+
+*Proof.* Then $t_i(K)=c_iK/K_0$, a positive multiple of $c$, and Webster's priorities depend on the weights only up to scale. So $R$ is Webster on the fixed weights $c$, run from $c$. Webster with weights $c$ and house size $K_0$ returns $c$, because every quota is an integer. So the sequential run from $c$ coincides with $\mathrm{Web}(c,K)$, which is house monotonic by Corollary A3. $\square$
+
+So the paradox comes from GDP shares differing from seat shares, which is the whole point of the proposal. The fix is to round only the new seats.
+
+**Proposition B8.** The incremental hybrid $R'(K)=c+\mathrm{Web}(m,\,K-K_0)$ is house monotonic, gives every state at least $c_i$, and has the same targets $t_i(K)$ as $R$.
+
+*Proof.* $\mathrm{Web}(m,\cdot)$ is a divisor method on fixed weights, so it is house monotonic (Corollary A3), and adding the constant vector $c$ preserves this. The floor holds because Webster's output is nonnegative, and the quota of the new seats is $(K-K_0)m_i$. $\square$
+
+### In India
+
+On April 13, 2026, Telangana's Chief Minister A. Revanth Reddy proposed allocating half of the new seats pro rata and half by states' GDP contribution. Press reports differ on whether "pro rata" means current seats or population. We read it as current seats, matching the government's pro-rata plan. Critics said no such model exists anywhere, and the BRS called it unconstitutional. In 2025 he had asked that the south's share rise from about 24% to 33%, in line with its GDP.
 
 > **TODO (group):** settle the reading of "pro rata" and state it in the paper.
 
-**Proposition 6.** The hybrid rule $R$ is not house monotone.
-
-*Proof.* Take three units with $c=(1,1,2)$, so $H_0=4$, and $g=(\tfrac25,\tfrac12,\tfrac1{10})$. Then $m=(\tfrac{13}{40},\tfrac{15}{40},\tfrac{12}{40})$.
-
-- $H=5$: $t=(1.325,\,1.375,\,2.3)$. From the floors $(1,1,2)$, the one new seat goes to the largest of 0.883, 0.917 and 0.920, so unit 3 wins and $s(5)=(1,1,3)$.
-- $H=6$: $t=(1.65,\,1.75,\,2.6)$. From $(1,1,2)$ the priorities are 1.10, 1.17 and 1.04, so unit 2 gets a seat (its priority drops to 0.70), then unit 1. So $s(6)=(2,2,2)$.
-
-Unit 3 drops from 3 seats to 2 when the House grows. $\square$
-
-The cause is that the weights depend on $H$. Unit 3 has a large current share but a small GDP share, so its target share $t_3(H)/H$ falls as the House grows ($0.46\to 0.43$). Units just below a rounding threshold then overtake it.
-
-**Lemma 7.** If $g_i=c_i/H_0$ for all $i$, then $R$ is house monotone.
-
-*Proof.* Then $t_i(H)=c_iH/H_0$, a positive multiple of $c$, and Webster's priorities depend on the weights only up to scale. So $R$ is Webster with the fixed weights $c$, started from $c$. Webster with weights $c$ and House $H_0$ gives exactly $c$, because all quotas are integers. Webster run one seat at a time is house monotone, so continuing from $c$ produces $\mathrm{Web}(c,H)$ for every $H\ge H_0$, and the sequence is house monotone. $\square$
-
-So the paradox comes precisely from GDP shares differing from seat shares, which is the whole point of the proposal. The fix is to round only the new seats.
-
-**Proposition 8.** The **incremental hybrid** $R'(H)=c+\mathrm{Web}(m,H-H_0)$ is house monotone, gives every unit at least $c_i$, and has the same targets $t_i(H)=c_i+(H-H_0)m_i$ as $R$.
-
-*Proof.* The weights $m$ do not depend on $H$, so $\mathrm{Web}(m,\cdot)$ is house monotone, and adding the constant vector $c$ preserves this. The floor holds because Webster's output is nonnegative. The quota of the new seats is $(H-H_0)m_i$. $\square$
-
 *Computed.*
-- **The paradox happens in the real data.** With 2026 projections, Bihar has 44 seats at $H=607$ and 43 at $H=608$.
-- **The fix costs almost nothing.** $R'$ gives exactly the same allocation as $R$ at $H=816$. Over $H\in[543,850]$ at most two seats ever move between units relative to $R$, and $R'$ never violates house monotonicity. In the toy instance, $R'$ gives $(1,2,2)$ then $(2,2,2)$.
+- **The paradox happens in the real data.** With 2026 projections, Bihar has 44 seats at $K=607$ and 43 at $K=608$.
+- **The fix costs almost nothing.** $R'$ equals $R$ at $K=816$, moves at most two seats relative to $R$ anywhere in $[543,850]$, and never violates house monotonicity.
 - **The south's share.**
-  - The south's share of 2022–23 GDP in our data is 30.2%. (The BRS leader K. T. Rama Rao used a figure of 36% when arguing that seat shares should match GDP shares.)
-  - The hybrid gives the south 24.99% at $H=816$, the only rule here other than the freeze that restores its share.
-  - It falls well short of Reddy's 33% target. Even if *all* new seats went by GDP, the south would get only 26.0% at $H=816$, approaching 30.2% only as the House grows without bound.
+  - The hybrid gives the south 24.99% at $K=816$, the only rule besides the freeze that restores it.
+  - It falls well short of 33%. Even if every new seat went by GDP, the south would get 26.0% at $K=816$. Its GDP share in our data is 30.2%, which the House approaches only as it grows without bound.
+- At $K=816$, 26 units are more than one seat from their population quota.
 
-## 8. Summary
+---
 
-| Rule | Proposed by | House monotone | Exact | Penalises slower growth | South quota share ($H=816$) |
+## Summary
+
+| Rule | House monotonic | Population monotonic | Quota w.r.t. population ($K=816$) | Penalises slower growth | South share ($K=816$) |
 |---|---|---|---|---|---|
-| Freeze / flat scale-up | 1976 freeze; government's verbal assurance | yes | no | no | 23.94% |
-| Population | 2026 bill | yes | yes | yes | 19.45% |
-| Fertility window $F_{0.5}$ | new here | yes | no | less (window growth $\times\lambda$) | 20.58% |
-| Degressive $D_{0.517}$ | Tharoor | yes | no | less (elasticity $\alpha$) | 21.14% |
-| Floor $L_{10}$ | (US, Brazil, Cambridge Compromise) | yes | no | yes | 18.22% |
-| Hybrid $R$ | Revanth Reddy | **no** | no | no (ignores population) | 24.99% |
-| Incremental hybrid $R'$ | fix proposed here | yes | no | no (ignores population) | 24.99% |
+| Freeze / flat scale-up | yes | yes (vacuous) | no (28 states outside) | no | 23.94% |
+| Population (2026 bill) | yes | yes | yes (not guaranteed, A5) | yes (A7) | 19.45% |
+| Fertility window $F_{0.5}$ | yes | yes | no (9) | less, by factor $\lambda$ | 20.58% |
+| Degressive $D_{0.517}$ | yes | yes | no (35) | less, elasticity $\alpha$ | 21.14% |
+| Floor $L_{10}$ | yes | yes | no (33) | yes | 18.22% |
+| Hybrid $R$ (Reddy) | **no** (B5) | **no** (B6) | no (26) | no (ignores population) | 24.99% |
+| Incremental hybrid $R'$ | yes (B8) | yes (vacuous) | no (26) | no (ignores population) | 24.99% |
 
-Shares are quota shares before rounding, with 2026 projected populations; the south's current share is 23.94%.
+The south's current share is 23.94%. Every rule satisfies the quota criterion with respect to its *own* weights on our data, though Corollary A5 says this is not guaranteed.
 
-Two conclusions follow. First, every rule built on population, including the two designed as compromises ($F_\lambda$ and $D_\alpha$), leaves the south below its current share for every parameter value, and floors make it worse. Only rules anchored on current seats or GDP restore it. Second, the one popular proposal that does restore the south, Reddy's hybrid, has an Alabama paradox as naturally written, and a one-line change removes it.
+Three conclusions follow.
+
+1. Every rule built on population, including the two designed as compromises, leaves the south below its current share for every parameter value, and floors make it worse. Only rules anchored on current seats or GDP restore it.
+2. The trade-off follows from the lecture framework. Only the population rule stays within quota with respect to population, and Observation A7 shows that any population-monotonic rule built on current population penalises slower growth.
+3. The one popular proposal that restores the south, Reddy's hybrid, breaks both of the lecture's monotonicity properties as written. A one-line change, rounding only the new seats, repairs house monotonicity.
 
 > **TODO (group):** link to the simulation: the formula differences above matter less for party seats than line-drawing does.
 
 ## References
 
-**Apportionment theory**
+**Course lectures (definitions in Part A)**
+- A. D. Procaccia, Apportionment in the 19th Century, CS 2380 Fall 2025: https://procaccia.info/courses/CS2380-F25/slides16.pdf
+- A. D. Procaccia, Apportionment in the 20th Century, CS 238 Spring 2021: https://procaccia.info/courses/CS238-S21/CS238-16.pdf
+- A. D. Procaccia, The Electoral College, CS 238 Spring 2021: https://procaccia.info/courses/CS238-S21/CS238-19.pdf
+- Course site: https://sites.google.com/view/optdemocracy26
+
+**Further theory**
 - M. L. Balinski and H. P. Young. *Fair Representation: Meeting the Ideal of One Man, One Vote*. Brookings Institution Press, 2nd ed., 2001.
 - L. S. Penrose. The elementary statistics of majority voting. *Journal of the Royal Statistical Society* 109(1):53–57, 1946.
 - G. R. Grimmett. European apportionment via the Cambridge Compromise. *Mathematical Social Sciences* 63(2):68–73, 2012. https://arxiv.org/abs/1105.4294
-- F. Pukelsheim and G. R. Grimmett, on methods for apportioning the European Parliament (2018): https://www.math.uni-augsburg.de/htdocs/emeriti/pukelsheim/2018b.pdf
 
 **Indian law and policy**
-- PRS Legislative Research, The Delimitation Bill, 2026: https://prsindia.org/billtrack/the-delimitation-bill-2026
+- PRS, The Delimitation Bill, 2026: https://prsindia.org/billtrack/the-delimitation-bill-2026
 - PRS, Implications of increasing the size of the Lok Sabha: https://prsindia.org/articles-by-prs-team/implications-of-increasing-the-size-of-the-lok-sabha
 - PRS, Report of the 15th Finance Commission for 2021–26: https://prsindia.org/policy/report-summaries/report-15th-finance-commission-2021-26
-- Business Standard, history of delimitation and the 1976 freeze: https://www.business-standard.com/india-news/delimitation-india-history-population-north-south-2026-census-126041500914_1.html
+- Business Standard, history of the 1976 freeze: https://www.business-standard.com/india-news/delimitation-india-history-population-north-south-2026-census-126041500914_1.html
 
 **Proposals**
-- Reddy's hybrid model: https://www.siasat.com/delimitation-telangana-cm-proposes-hybrid-model-for-increasing-ls-seats-3452163/ and https://deccanchronicle.com/southern-states/telangana/revanth-reddy-seeks-delimitation-based-on-2026-census-1950191
+- Reddy's hybrid model: https://www.siasat.com/delimitation-telangana-cm-proposes-hybrid-model-for-increasing-ls-seats-3452163/
 - Reddy's 33% demand (2025): https://www.business-standard.com/politics/southern-states-reject-population-formula-seek-gdp-based-representation-125032300788_1.html
 - Criticism of the hybrid model: https://deccanchronicle.com/southern-states/telangana/kishan-reddy-slams-revanths-hybrid-delimitation-ploy-as-global-nonsense-1950464
-- Tharoor on degressive proportionality: https://telanganatoday.com/shashi-tharoor-suggests-degressive-proportionality-for-lok-sabha-delimitation and https://www.siasat.com/consult-states-before-delimitation-says-shashi-tharoor-to-pm-3453246/
+- Tharoor on degressive proportionality: https://www.siasat.com/consult-states-before-delimitation-says-shashi-tharoor-to-pm-3453246/
 
 **Other countries**
 - EU composition decision, 2023: https://eur-lex.europa.eu/eli/dec/2023/2061/oj
-- Brazil's Chamber of Deputies apportionment: https://aceproject.org/ace-en/topics/es/annex/esy/esy_br
+- Brazil's Chamber of Deputies: https://aceproject.org/ace-en/topics/es/annex/esy/esy_br
