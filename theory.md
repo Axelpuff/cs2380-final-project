@@ -103,7 +103,7 @@ The lecture methods take only populations as input. Every rule in the Indian deb
 
 **Lemma A6 (ours).** Suppose a weight rule's weights do not depend on $`K`$, and each $`w_i=\varphi_i(p_i)`$ is a strictly increasing function of state $`i`$'s own population; other data, such as past censuses, are held fixed. Then the rule is population monotonic and house monotonic.
 
-*Proof.* Repeat the proof of Theorem A1 with $`w`$ in place of $`p`$. If $`i`$ gains and $`j`$ loses, then $`w_i'>w_i`$ or $`w_j'<w_j`$, so $`p_i'>p_i`$ or $`p_j'<p_j`$ because each $`\varphi_i`$ is strictly increasing. House monotonicity follows from Theorem A2. $`\square`$
+*Proof.* Repeat the proof of Theorem A1 with $`w`$ in place of $`p`$. If $`i`$ gains and $`j`$ loses, then $`w_i'>w_i`$ and $`w_j'<w_j`$, so $`p_i'>p_i`$ or $`p_j'<p_j`$ because each $`\varphi_i`$ is strictly increasing. House monotonicity follows from Theorem A2. $`\square`$
 
 If the weights do not depend on population at all, the same argument gives population monotonicity vacuously: the allocation never responds to population.
 
