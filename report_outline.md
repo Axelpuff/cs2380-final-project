@@ -25,11 +25,39 @@ Project 1 is the closest model: it combines theorems with real legislature data 
 |---|---|
 | Abstract + 1 Introduction | 1.25 |
 | 2 Setting and model | 1.0 |
-| 3 The seat rules: axiomatic analysis | 2.25 |
+| 3 The seat rules: axiomatic analysis | 2.5 |
 | 4 Simulation design | 1.0 |
-| 5 Results | 2.0 |
+| 5 Results | 1.75 |
 | 6 Discussion and limitations | 0.5 |
 | **Total** | **8.0** |
+
+§3.7 (reserved seats) takes its quarter page from §5.4 (demographic trends), which moves to Appendix B with one sentence left in the body.
+
+## Novelty relative to the US setting
+
+Both countries solve the same two problems in sequence: apportion seats among states, then draw districts within each state. Almost all apportionment theory (Balinski and Young; Lectures 16–17) and redistricting-ensemble work (the Duchin group) is built on the US. India adds a third layer: which seats are reserved, and for whom.
+
+| | United States (House) | India (Lok Sabha) |
+|---|---|---|
+| Seats among states | Huntington–Hill method, House fixed at 435 | Frozen at 1971 since 1976; the formula is now contested (§3) |
+| Equal population within a state | Strict (*Wesberry v. Sanders*, 1964) | Roughly equal, built from whole assembly segments |
+| Contiguity, compactness | Set by state law; not a federal requirement | Practicability and geography, per the Delimitation Act |
+| Minority representation | Voting Rights Act §2: districts where a minority group can elect its preferred candidate. Any candidate may run | **Reserved seats** (Art. 330): only Scheduled Caste (SC) or Scheduled Tribe (ST) candidates may stand; everyone votes |
+| How many minority seats | Comes out of litigation; no fixed number | **Proportional to the group's share of the state's population** (Art. 330(2)), so it is itself an apportionment |
+| Women | None | **One third of seats**, including one third of SC and ST seats (106th Amendment, 2023). Takes effect only after the next delimitation, and rotates at each later one |
+
+Corrections to keep the framing accurate:
+
+- **Castes:** only Scheduled Castes and Scheduled Tribes get reserved Lok Sabha seats. Other Backward Classes do not.
+- **Women's quota:** it exists, but it is not yet in force. The 2023 Act ties it to the delimitation this project studies, which makes it more relevant to the project, not less.
+- **US geometric rules:** the federal rule is mainly equal population. Compactness and contiguity come from state law.
+
+**Why it is a committee problem.** After the formula fixes $`k_i`$ seats for state $`i`$, two more allocations follow:
+
+1. **Category counts.** These are SC seats $`s_i\approx k_i\cdot \mathrm{SC}_i/p_i`$ and the matching ST seats $`t_i`$. Each is rounded within its state, so the national result is a two-dimensional (state × category) apportionment. That links to biproportional apportionment (Balinski and Demange; Pukelsheim).
+2. **Constituency labels.** Some constituencies get labels (SC, ST, women), subject to quotas that overlap, because women's seats must be one third of the SC and ST seats as well. This resembles committee selection with quotas on overlapping groups, as in fair selection of citizens' assemblies.
+
+So a seat formula moves more than state seat counts. Because SC and ST shares vary widely across states, it also changes how many reserved seats exist nationally.
 
 ---
 
@@ -52,11 +80,13 @@ The abstract makes four points:
   3. A new fertility-window rule and its monotone comparative statics.
   4. The first ensemble analysis of Indian redistricting that we know of, combining ReCom (GerryChain's random map generator) with short-burst optimisation in 20 states.
   5. The headline finding: line-drawing moves seats about six times as much as the formula does.
+  6. **A setting beyond the US model.** India's delimitation is a three-layer problem: seats among states, reserved-seat counts within states, and district lines. We show that the seat formula also changes the national number of SC and ST seats (§3.7).
 - **1.1 Related work** (one paragraph):
   - apportionment axioms: Balinski and Young
   - degressive proportionality: Penrose; Grimmett's Cambridge Compromise
-  - redistricting ensembles: DeFord, Duchin and Solomon; Cannon et al. on short bursts
+  - redistricting ensembles: DeFord, Duchin and Solomon; Cannon et al. on short bursts. Note that this work is almost entirely on US maps
   - India's 2008 delimitation: Iyer, Weir and Ostermann
+  - apportionment with categories: biproportional apportionment (Balinski and Demange; Pukelsheim); committee and panel selection with group quotas
 
 ## 2 Setting and model (1 page)
 
@@ -65,6 +95,7 @@ The abstract makes four points:
   - the 42nd and 84th Amendments
   - the 2026 bill and its 850-seat cap
   - how delimitation works: seats among states first, then constituency lines within each state
+  - **the comparison with the US** (a compressed version of the table under "Novelty relative to the US setting", possibly as Table 0): Art. 330 reserved seats for SC and ST, the women's quota from the 2023 Act, and how reserved seats differ from Voting Rights Act districts
 - **2.2 Apportionment model.** Quotas, divisor methods and Webster's method, compressed from theory.md A.1–A.5. Cite Lectures 16–17 rather than reproducing them.
 - **2.3 Our extensions:**
   - the definition of a weight rule
@@ -93,6 +124,10 @@ Source: `theory.md` Part A.
   - **Table 1:** each rule's monotonicity, its quota violations at K = 816, whether it penalises slower growth, and the south's share.
   - State the trilemma: population-based rules can't restore the south, the rules that do ignore population, and the one popular compromise breaks monotonicity.
   - Consider turning the trilemma into a single proposition (extension 3 in `summary_of_codebase.md`).
+- **3.7 Reserved seats: a second apportionment** (0.25 page, new):
+  - Model the within-state SC and ST counts as Webster's method applied to the category populations at size $`k_i`$. First check how the Delimitation Commission actually rounds.
+  - **Computed:** national SC, ST and women's seat totals under each formula at K = 816. Hypothesis to test: the degressive rule raises ST seats, because the Northeast is mostly ST.
+  - **Possible result:** reserved-seat counts inherit house monotonicity from the state allocation only when both layers are divisor methods. Check whether the nested one-third rule for women can break it.
 - **Rajagopalan.** One paragraph or footnote. Her Lok Sabha rule is the population rule, and her Revenue Sabha is in Appendix B.
 
 Source: `theory.md` Part B.
@@ -123,7 +158,7 @@ Source: `README.md` Method section, `analysis/simlib.py`, `analysis/run_state.py
   - Compare with Iyer, Weir and Ostermann.
 - **5.3 How robust are drawn maps?**
   - **Figure 3:** the seats–votes curve. The optimised map falls from 563 seats to 513 after a one-point adverse swing, and matches a neutral map after about four points.
-- **5.4 Demographic trends.** The south's share under the 2026 and 2036 projections, and the GDP convergence control for Reddy's rule. One paragraph.
+- **5.4 Demographic trends.** One sentence here; the details are in Appendix B: the south's share under the 2026 and 2036 projections, and the GDP convergence control for Reddy's rule.
 - **5.5 (optional) Power, not seats.** Banzhaf indices for party blocs at the majority and two-thirds thresholds.
 
 ## 6 Discussion and limitations (0.5 page)
@@ -137,9 +172,12 @@ Source: `README.md` Method section, `analysis/simlib.py`, `analysis/run_state.py
   - maps are built from whole assembly segments
   - 9 states have no segment-level lean
   - 39 seats are not redrawn
-  - reserved seats are ignored
+  - reserved-seat counts are modelled (§3.7), but the simulated maps do not choose which constituencies are reserved
   - "optimised" maps are a heuristic bound, not a forecast
-- **Future work.** Calibrate "tilted" against real gerrymanders, add reserved-seat constraints to ReCom, and add a second election.
+- **Future work.**
+  - Add the reservation layer to the simulation: whoever draws the lines also decides which areas become SC or ST seats, and that is a lever for gerrymandering that has no US equivalent.
+  - Calibrate "tilted" against real gerrymanders.
+  - Add a second election.
 
 ## References
 
@@ -185,3 +223,6 @@ These come from `summary_of_codebase.md`.
 | §5.2 | Report `actual_pct`, which `summary.py` already prints | small |
 | §5.5 | Compute Banzhaf indices for party blocs, or cut §5.5 | medium |
 | App. D | Fix seeding (`PYTHONHASHSEED` or explicit seeds) and add convergence diagnostics | small–medium |
+| §2.1, §3.7 | Check the legal facts against primary sources: Art. 330(2); the Delimitation Act's rules for choosing reserved constituencies and for rounding; the 2023 Act's start date and rotation; and whether the 2026 bill changed any of them | small |
+| §3.7 | Add 2011 census SC and ST populations by state to `apportion.py` (from the census Primary Census Abstract), with the source in a comment | small |
+| §6 (future) | Get SC and ST shares for each assembly segment, so ReCom can take reservation constraints | medium–large |
