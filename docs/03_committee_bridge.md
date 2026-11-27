@@ -1,6 +1,8 @@
 # Committee-flavored apportionment: links to Lecture 12, extensions, and literature
 
-Written 27 November 2026. This file is a companion to `report_outline.md` and does not change it. The numbers marked *Computed* came from ad hoc runs against `analysis/apportion.py` on the date above. They are not yet in committed code.
+*Read after: [02 theory](02_theory_state_apportionment.md). Leads to: [04 reserved seats](04_reserved_seats.md).*
+
+Written 27 November 2026. This file is a companion to `05_report_outline.md`. The numbers marked *Computed* came from ad hoc runs against `analysis/apportion.py` on the date above. They are not yet in committed code.
 
 **Novelty at a glance.**
 
@@ -34,7 +36,7 @@ Treat each state as a "party" with unlimited candidates. Each citizen of state $
 
 **Proposition C1 (known; Brill, Laslier and Skowron 2018).** On party-list profiles, the Thiele method with non-increasing weights $`s`$ is the divisor method with signposts $`d(k)=1/s_{k+1}`$.
 
-- **Why.** The Thiele score splits into a sum over parties, $`\sum_i p_i(s_1+\dots+s_{k_i})`$, and each term is concave in $`k_i`$. So adding seats greedily is optimal, and the greedy step gives the next seat to the largest $`p_i\,s_{k_i+1}=p_i/d(k_i)`$. That is the sequential form of a divisor method (`theory.md` A.3).
+- **Why.** The Thiele score splits into a sum over parties, $`\sum_i p_i(s_1+\dots+s_{k_i})`$, and each term is concave in $`k_i`$. So adding seats greedily is optimal, and the greedy step gives the next seat to the largest $`p_i\,s_{k_i+1}=p_i/d(k_i)`$. That is the sequential form of a divisor method (`02_theory_state_apportionment.md` A.3).
 - **The dictionary:**
 
   | Thiele method | Weights $`s_j`$ | Apportionment method |
@@ -61,11 +63,11 @@ Treat each state as a "party" with unlimited candidates. Each citizen of state $
 2. **Webster can fail EJR.** This is a restatement of Webster's known failure of lower quota (Balinski and Young), so it is an illustration, not a result. Take populations $`(7,8,7,33)`$ and $`k=5`$.
    - Webster gives $`(1,1,1,2)`$, but state 4's quota is exactly 3.
    - Its 33 citizens are a group of size $`3n/k`$ with 3 common candidates, yet they get only 2 seats.
-   - Corollary A5 in `theory.md` says such cases exist; this is a concrete one. It also answers the slide 16 poll for party lists.
+   - Corollary A5 in `02_theory_state_apportionment.md` says such cases exist; this is a concrete one. It also answers the slide 16 poll for party lists.
 3. **The bill uses the member of the Thiele family that can fail EJR.** Guaranteeing EJR means switching to Jefferson (PAV), which tilts towards large states.
    - *Computed* (2026 projections, $`K=816`$, same floors as the simulation): Jefferson gives UP +2 seats, Bihar +1 and Maharashtra +1. Andhra Pradesh, Kerala, Uttarakhand and Delhi each lose one.
    - So EJR costs the south seats.
-4. **Every rule restated in committee language.** A state below its lower quota is a group of citizens whose EJR claim is violated. This is new as a calculation on India, but it is essentially the quota-violation counts in `theory.md`, renamed. The one substantive finding is about Indian law, not committee theory: the 6-million floor pushes UP and Maharashtra below lower quota under the bill.
+4. **Every rule restated in committee language.** A state below its lower quota is a group of citizens whose EJR claim is violated. This is new as a calculation on India, but it is essentially the quota-violation counts in `02_theory_state_apportionment.md`, renamed. The one substantive finding is about Indian law, not committee theory: the 6-million floor pushes UP and Maharashtra below lower quota under the bill.
 
    *Computed* (2026, $`K=816`$, simulation floors):
 
@@ -78,7 +80,7 @@ Treat each state as a "party" with unlimited candidates. Each citizen of state $
    | Bill (Webster on population) | 2 | 2 | UP, MH |
    | Jefferson on population | 0 | 0 | none |
 
-> **Inconsistency found in `theory.md` B.2.** It says every state is within one seat of its quota under the bill at $`K=816`$. That holds with a one-seat floor. With the simulation's floors (states under 6 million keep their current seats), UP gets 138 against a quota of 139.22, and Maharashtra gets 73 against 74.13. The 6.3 extra seats given to small states come out of the big states. `theory.md` needs to name the floor rule it uses.
+> **Inconsistency found in `02_theory_state_apportionment.md` B.2.** It says every state is within one seat of its quota under the bill at $`K=816`$. That holds with a one-seat floor. With the simulation's floors (states under 6 million keep their current seats), UP gets 138 against a quota of 139.22, and Maharashtra gets 73 against 74.13. The 6.3 extra seats given to small states come out of the big states. `02_theory_state_apportionment.md` needs to name the floor rule it uses.
 
 ## 4. Extensions, ranked by value for effort
 
@@ -127,7 +129,7 @@ This is where the project could add something new. Related work uses biproportio
 
 ### 5.1 Classical apportionment
 
-Balinski and Young (2001) is the standard treatment of divisor methods, monotonicity and quota, including the impossibility result used in `theory.md` (A4). Pukelsheim (2017) covers apportionment as practised in European electoral law, including biproportional methods. Penrose (1946) is the origin of the square-root law behind Tharoor's degressive rule. Grimmett (2012) analyses the Cambridge Compromise for the European Parliament, which combines a floor with proportional seats. All of these treat states as disjoint groups and do not handle quotas within a state.
+Balinski and Young (2001) is the standard treatment of divisor methods, monotonicity and quota, including the impossibility result used in `02_theory_state_apportionment.md` (A4). Pukelsheim (2017) covers apportionment as practised in European electoral law, including biproportional methods. Penrose (1946) is the origin of the square-root law behind Tharoor's degressive rule. Grimmett (2012) analyses the Cambridge Compromise for the European Parliament, which combines a floor with proportional seats. All of these treat states as disjoint groups and do not handle quotas within a state.
 
 ### 5.2 Committee elections and proportionality axioms
 

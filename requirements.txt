@@ -5,6 +5,7 @@ shapely>=2.0
 topojson
 numpy
 pandas
+openpyxl    # only for reading the 2011 census workbook in data/census2011
 rapidfuzz
 playwright  # only for analysis/shot.py
 pillow      # only for cropping screenshots

@@ -1,6 +1,7 @@
 # source data: fetch with the commands in data/README.md
 data/dm_maps/
 data/india-votes-data/
+data/census2011/
 # regenerable caches
 analysis/stage1.pkl
 analysis/pcshp.pkl

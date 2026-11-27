@@ -1,6 +1,17 @@
 # Delimitation Stress Test
 
-**See [SUMMARY.md](SUMMARY.md) for a more straightforward description.**
+## Start here: reading order
+
+The docs in `docs/` are numbered in the order they were written. Each one answers the question the one before it raises, so read them in that order.
+
+1. [01_project_origin.md](docs/01_project_origin.md): what was asked, what was built, and which seat formulas had to be filled in. **Leads to** the six rules to analyse.
+2. [02_theory_state_apportionment.md](docs/02_theory_state_apportionment.md): Module 1, lever 1. Covers the apportionment axioms (Lectures 15–17), each rule's properties with proofs, and the trilemma. **Leads to** the question of whether each rule gives every state its lower quota.
+3. [03_committee_bridge.md](docs/03_committee_bridge.md): apportionment as a party-list committee election (Lecture 12): Thiele ↔ divisor, and EJR = lower quota. **Leads to** the vocabulary for the reservation layer.
+4. [04_reserved_seats.md](docs/04_reserved_seats.md): Module 2. Covers the law of SC, ST and women's reservations, rounding model M, theory directives T1–T7, and the House as a constrained committee. **Leads to** the paper.
+5. [05_report_outline.md](docs/05_report_outline.md): the 8-page report, section by section, with the claims ledger and the work still needed. **This is the map of the final paper.**
+6. [06_status_and_open_work.md](docs/06_status_and_open_work.md): what is done, what is missing, and which numbers have no code behind them yet.
+
+The simulation (Module 1, lever 2: line-drawing) is described below, under Method.
 
 How much partisan power moves when the Lok Sabha is reapportioned, and how much moves when the lines inside each state are redrawn. Built as a starting point for a CS 2380 (Optimized Democracy) final project.
 
@@ -35,6 +46,7 @@ analysis/             scripts, run from inside this folder
 analysis/out/         raw simulation output, one JSON per state
 analysis/run_log_*.txt  console logs of the simulation run
 data/                 source data goes here (not committed; see data/README.md)
+docs/                 project write-ups, numbered in reading order (see "Start here")
 docs/screenshots/     the page in light, dark and phone layouts
 scratch/              the first-pass apportionment script behind the earlier pitch
 ```

@@ -1,3 +1,7 @@
+# Project origin: what was asked and what was built
+
+*Read after: [README](../README.md). Leads to: [02 theory](02_theory_state_apportionment.md).*
+
 > Can you tell me a narrative explanation of what happened? ... What objectives did you pursue and in what order? Highlight the decisions you made along the way and what you filled in. Make sure to delineate the specific points or goals I specified.
 
 Here is the sequence, with what you specified separated from what I decided or filled in.

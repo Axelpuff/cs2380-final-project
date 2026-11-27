@@ -1,5 +1,7 @@
 # Theory: the seat rules, the math behind them, and what they do in India
 
+*Read after: [01 project origin](01_project_origin.md). Leads to: [03 committee bridge](03_committee_bridge.md).*
+
 This section has two parts.
 
 - **Part A** sets out the mathematical framework from the course: the apportionment model, the methods, the properties and the theorems, using the lecture definitions and notation. A few extensions we need that are *not* in the lectures are marked **(ours)**.
